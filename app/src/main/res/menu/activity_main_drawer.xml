@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="none">
+
+        <item
+            android:id="@+id/newfile"
+            android:icon="@drawable/newfile3"
+            android:title="新建空文档"
+            />
+
+        <item
+            android:id="@+id/openfile"
+            android:icon="@drawable/openfile3"
+            android:title="打开文件" />
+
+
+        <item
+            android:id="@+id/helptext"
+            android:icon="@drawable/help2"
+            android:title="语法参考" />
+        <item
+            android:id="@+id/onofftools"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="打开工具栏"/>
+
+        <item
+            android:id="@+id/sharetext"
+            android:icon="@drawable/sharetext3"
+            android:title="分享内容" />
+
+    </group>
+
+    <item android:title="程序相关">
+        <menu>
+            <item
+                android:id="@+id/nav_setting"
+                android:icon="@drawable/setting2"
+                android:title="程序设置" />
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="分享软件" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/feed2"
+                android:title="发送反馈" />
+        </menu>
+    </item>
+
+</menu>
