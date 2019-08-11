@@ -1,0 +1,28 @@
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory app:title="程序基础配置">
+
+        <PreferenceScreen
+            android:icon="@drawable/workdir1"
+            android:key="workdir"
+            android:title="工作空间目录" />
+        <PreferenceScreen
+            android:icon="@drawable/ver1"
+            android:key="ver"
+            android:title="版本号" />
+    </PreferenceCategory>
+
+
+
+    <PreferenceCategory app:title="其他">
+
+        <PreferenceScreen
+            android:icon="@drawable/githubs1"
+            android:title="开源项目"
+            android:summary="@string/githubs"/>
+
+    </PreferenceCategory>
+
+
+</androidx.preference.PreferenceScreen>

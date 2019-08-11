@@ -24,7 +24,7 @@
         <item
             android:id="@+id/onofftools"
             android:icon="@drawable/ic_menu_manage"
-            android:title="打开工具栏"/>
+            android:title="开/关工具栏"/>
 
         <item
             android:id="@+id/sharetext"
@@ -35,6 +35,10 @@
 
     <item android:title="程序相关">
         <menu>
+            <item
+                android:id="@+id/nav_theme"
+                android:icon="@drawable/birr1"
+                android:title="日/夜模式" />
             <item
                 android:id="@+id/nav_setting"
                 android:icon="@drawable/setting2"

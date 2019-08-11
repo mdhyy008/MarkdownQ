@@ -17,8 +17,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.HelpActivity"
-            android:label="Markdown语法基础对照表"></activity>
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:label="@string/title_activity_settings"></activity>
+        <activity
+            android:name=".activity.HelpActivity"
+            android:label="Markdown语法基础对照表" />
         <activity
             android:name=".activity.FeedActivity"
             android:label="反馈问题" />

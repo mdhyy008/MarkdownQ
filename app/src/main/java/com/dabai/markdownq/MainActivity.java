@@ -2,12 +2,15 @@ package com.dabai.markdownq;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +19,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dabai.markdownq.activity.FeedActivity;
 import com.dabai.markdownq.activity.HelpActivity;
+import com.dabai.markdownq.activity.SettingsActivity;
 import com.dabai.markdownq.utils.DabaiUtils;
 import com.dabai.markdownq.utils.FileUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -60,6 +64,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.view.Menu;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.AdapterView;
@@ -79,6 +85,9 @@ import java.util.List;
 
 import br.tiagohm.markdownview.MarkdownView;
 import br.tiagohm.markdownview.css.styles.Github;
+import co.mobiwise.materialintro.shape.Focus;
+import co.mobiwise.materialintro.shape.FocusGravity;
+import co.mobiwise.materialintro.view.MaterialIntroView;
 import ren.qinc.edit.PerformEdit;
 
 public class MainActivity extends AppCompatActivity
@@ -147,14 +156,40 @@ public class MainActivity extends AppCompatActivity
         init_val();
         init();
 
+        /**
+         * 引导动画
+         */
+
+        IntroView(fab,"1","这里是保存按钮，每次更改完记得保存哦，不然内容丢失可不负责呦");
+
 
     }
+
+    private void IntroView(View v,String id,String text) {
+
+        new MaterialIntroView.Builder(this)
+                .enableDotAnimation(true)
+                .enableIcon(true)
+                .setFocusGravity(FocusGravity.CENTER)
+                .setFocusType(Focus.NORMAL)
+                .setDelayMillis(200)
+                .setTargetPadding(30)
+                .enableFadeAnimation(true)
+                .performClick(false)
+                .setInfoText(text)
+                .setTarget(v)
+                .setUsageId(id) //THIS SHOULD BE UNIQUE ID
+                .show();
+
+    }
+
 
 
     /**
      * 初始化逻辑
      */
     private void init() {
+
 
         //检查权限
         checkPermissio();
@@ -189,7 +224,7 @@ public class MainActivity extends AppCompatActivity
 
 
         //判断工具栏 有没有打开 恢复他的状态
-        if (get_sharedString("tipscard", "显示").equals("显示")) {
+        if (get_sharedString("tipscard", "不显示").equals("显示")) {
             tipscard.setVisibility(View.VISIBLE);
         } else {
             tipscard.setVisibility(View.GONE);
@@ -210,6 +245,36 @@ public class MainActivity extends AppCompatActivity
                 new_file();
             }
         }
+
+        initTheme();
+
+    }
+
+    private void initTheme() {
+
+        String theme = get_sharedString("theme","日");
+        if (theme.equals("日")){
+
+        }else{
+            NavigationView navigationView = findViewById(R.id.nav_view);
+            navigationView.setBackgroundColor(Color.parseColor("#607D8B"));
+
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#607D8B")));
+            view_edit.setBackgroundColor(Color.parseColor("#90a4ae"));
+            viewPager.setBackgroundColor(Color.parseColor("#90a4ae"));
+            view2.setBackgroundColor(Color.parseColor("#90a4ae"));
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Window window = this.getWindow();
+                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                    window.setStatusBarColor(Color.parseColor("#455A64"));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        view_edit.setTypeface(Typeface.createFromAsset(getAssets(), "Roboto-Regular.ttf"));
 
     }
 
@@ -397,16 +462,12 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onPageScrolled(int position, float positionOffset, int
                     positionOffsetPixels) {
-
             }
 
             @Override
             public void onPageSelected(int position) {
                 if (position == 1) {
-                    String text = view_edit.getText().toString();
-                    if (text.isEmpty()) {
-                        //Snackbar.make(cons, "无文本，不转换", Snackbar.LENGTH_SHORT).show();
-                    }
+                    fab.setVisibility(View.GONE);
                 }
             }
 
@@ -419,7 +480,6 @@ public class MainActivity extends AppCompatActivity
 
                         mMarkdownView.addStyleSheet(new Github());
                         mMarkdownView.loadMarkdown(text);
-
 
                         break;
                     case ViewPager.SCROLL_STATE_DRAGGING:
@@ -490,6 +550,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -710,11 +771,41 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.helptext) {
             startActivity(new Intent(this, HelpActivity.class));
 
+        }else if (id == R.id.nav_setting) {
+            startActivity(new Intent(this, SettingsActivity.class));
+
+        } else if (id == R.id.nav_theme) {
+
+            String theme = get_sharedString("theme","日");
+            Log.d(TAG, "onNavigationItemSelected: "+theme);
+           if (theme.equals("日")){
+               set_sharedString("theme","夜");
+               Snackbar.make(cons, "主题更新 - 夜，请重启软件", Snackbar.LENGTH_LONG).setAction("重启", new View.OnClickListener() {
+                   @Override
+                   public void onClick(View view) {
+                      finish();
+                      startActivity(new Intent(MainActivity.this,MainActivity.class));
+                   }
+               }).show();
+           }
+           else {
+               set_sharedString("theme","日");
+               Snackbar.make(cons, "主题更新 - 日，请重启软件", Snackbar.LENGTH_LONG).setAction("重启", new View.OnClickListener() {
+                   @Override
+                   public void onClick(View view) {
+                       finish();
+                       startActivity(new Intent(MainActivity.this,MainActivity.class));
+
+                   }
+               }).show();
+           }
+
         } else if (id == R.id.onofftools) {
 
             if (tipscard.getVisibility() == View.GONE) {
                 tipscard.setVisibility(View.VISIBLE);
                 set_sharedString("tipscard", "显示");
+                IntroView(tipscard,"2","这里是工具栏，可以查看统计和使用快捷按钮");
             } else {
                 tipscard.setVisibility(View.GONE);
                 set_sharedString("tipscard", "不显示");
