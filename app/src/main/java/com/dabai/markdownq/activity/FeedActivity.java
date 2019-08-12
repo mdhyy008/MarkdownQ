@@ -59,7 +59,6 @@ public class FeedActivity extends AppCompatActivity {
 
         String text = til2.getEditText().getText().toString();
 
-
         try {
             if (!text.equals("")) {
                 seedbutton.setText("正在发送......");
@@ -98,12 +97,20 @@ public class FeedActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "发送成功", Toast.LENGTH_SHORT).show();
                                 finish();
                             } else {
+                                finish();
                                 Toast.makeText(getApplicationContext(), "发送失败", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
                 } catch (Exception e) {
-                    Toast.makeText(getApplicationContext(), "ERROR:" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            finish();
+                            Toast.makeText(getApplicationContext(), "应该是没有网络吧", Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
                 }
             }
         }).start();

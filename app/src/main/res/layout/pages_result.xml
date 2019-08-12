@@ -1,25 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#fff"
-    >
+    android:orientation="vertical">
 
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="预览模式"
-        android:gravity="center"
         android:background="#eeeeee"
-        />
+        android:gravity="center"
+        android:text="预览模式" />
 
-    <br.tiagohm.markdownview.MarkdownView
-        android:id="@+id/markdownview"
+
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </br.tiagohm.markdownview.MarkdownView>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="正在解析"
+            android:gravity="center"
+            android:textSize="22sp"/>
 
+
+        <ScrollView
+        android:id="@+id/scr_res"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+            <br.tiagohm.markdownview.MarkdownView
+                android:id="@+id/markdownview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </br.tiagohm.markdownview.MarkdownView>
+
+    </ScrollView>
+    </RelativeLayout>
 </LinearLayout>

@@ -8,9 +8,20 @@
             android:key="workdir"
             android:title="工作空间目录" />
         <PreferenceScreen
-            android:icon="@drawable/ver1"
-            android:key="ver"
-            android:title="版本号" />
+            android:icon="@drawable/deldir2"
+            android:key="deldir"
+            android:title="回收站" />
+
+        <PreferenceScreen
+            android:icon="@drawable/textsize1"
+            android:key="textsize"
+            android:title="编辑框字体大小" />
+        <SwitchPreference
+            android:icon="@drawable/sync1"
+            android:key="scr_some"
+            android:defaultValue="true"
+            android:title="同步滚动" />
+
     </PreferenceCategory>
 
 
@@ -18,9 +29,21 @@
     <PreferenceCategory app:title="其他">
 
         <PreferenceScreen
-            android:icon="@drawable/githubs1"
-            android:title="开源项目"
-            android:summary="@string/githubs"/>
+            android:icon="@drawable/ver1"
+            android:key="ver"
+            android:title="版本号" />
+
+        <PreferenceScreen
+            android:key="github"
+            android:icon="@drawable/model1"
+            android:title="开源相关"
+            android:summary="用到的开源项目以及软件相关"/>
+
+        <PreferenceScreen
+            android:key="about"
+            android:icon="@drawable/dev2"
+            android:title="关于软件"
+   />
 
     </PreferenceCategory>
 

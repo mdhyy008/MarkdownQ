@@ -2,18 +2,52 @@ package com.dabai.markdownq;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.ActivityManager;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.Layout;
+import android.text.Selection;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.Display;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -23,64 +57,14 @@ import com.dabai.markdownq.activity.SettingsActivity;
 import com.dabai.markdownq.utils.DabaiUtils;
 import com.dabai.markdownq.utils.FileUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
-import android.provider.Settings;
-import android.text.Editable;
-import android.text.InputType;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.Display;
-import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.solver.Cache;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.FileProvider;
-import androidx.core.view.GravityCompat;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-
-import android.view.MenuItem;
-
-import com.google.android.material.navigation.NavigationView;
-import com.zzhoujay.markdown.MarkDown;
-import com.zzhoujay.richtext.ImageHolder;
-import com.zzhoujay.richtext.RichText;
-import com.zzhoujay.richtext.RichType;
-import com.zzhoujay.richtext.callback.ImageGetter;
-import com.zzhoujay.richtext.callback.OnImageClickListener;
-import com.zzhoujay.richtext.ig.DefaultImageGetter;
-
-import androidx.drawerlayout.widget.DrawerLayout;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-
-import android.view.Menu;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebView;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import br.tiagohm.markdownview.MarkdownView;
@@ -90,6 +74,28 @@ import co.mobiwise.materialintro.shape.FocusGravity;
 import co.mobiwise.materialintro.view.MaterialIntroView;
 import ren.qinc.edit.PerformEdit;
 
+/**
+
+//  ┏┓　　　┏┓
+//┏┛┻━━━┛┻┓
+//┃　　　　　　　┃
+//┃　　　━　　　┃
+//┃　┳┛　┗┳　┃
+//┃　　　　　　　┃
+//┃　　　┻　　　┃
+//┃　　　　　　　┃
+//┗━┓　　　┏━┛
+//    ┃　　　┃   神兽保佑
+//    ┃　　　┃   代码无BUG！
+//    ┃　　　┗━━━┓
+//    ┃　　　　　　　┣┓
+//    ┃　　　　　　　┏┛
+//    ┗┓┓┏━┳┓┏┛
+//      ┃┫┫　┃┫┫
+//      ┗┻┛　┗┻┛
+
+**/
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -97,10 +103,11 @@ public class MainActivity extends AppCompatActivity
     private ViewPager viewPager;  //对应的viewPager
     private List<View> viewList;//view数组
     EditText view_edit;
-    TextView view_result_text;
-    WebView view_result_web;
-
     ConstraintLayout cons;
+
+    ScrollView scr_edit;
+    ScrollView scr_res;
+
 
     TextView te2;
     CardView tipscard;
@@ -132,10 +139,19 @@ public class MainActivity extends AppCompatActivity
                 save_file();
             }
         });
+        fab.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                hideInput();
+                save_file();
+                viewPager.setCurrentItem(1);
+                return true;
+            }
+        });
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
             @Override
             public void onDrawerOpened(View drawerView) {
                 hideInput();
@@ -160,18 +176,18 @@ public class MainActivity extends AppCompatActivity
          * 引导动画
          */
 
-        IntroView(fab,"1","这里是保存按钮，每次更改完记得保存哦，不然内容丢失可不负责呦");
+        IntroView(fab, "1", "这里是保存按钮，每次更改完记得保存哦，不然内容丢失可不负责呦\n单击：立即保存\n长按：立即保存并预览");
 
 
     }
 
-    private void IntroView(View v,String id,String text) {
+    private void IntroView(View v, String id, String text) {
 
         new MaterialIntroView.Builder(this)
                 .enableDotAnimation(true)
                 .enableIcon(true)
                 .setFocusGravity(FocusGravity.CENTER)
-                .setFocusType(Focus.NORMAL)
+                .setFocusType(Focus.ALL)
                 .setDelayMillis(200)
                 .setTargetPadding(30)
                 .enableFadeAnimation(true)
@@ -180,22 +196,18 @@ public class MainActivity extends AppCompatActivity
                 .setTarget(v)
                 .setUsageId(id) //THIS SHOULD BE UNIQUE ID
                 .show();
-
     }
-
 
 
     /**
      * 初始化逻辑
      */
+    @SuppressLint("NewApi")
     private void init() {
 
 
         //检查权限
         checkPermissio();
-
-        //初始化md编译器
-        RichText.initCacheDir(this);
 
         //检测屏幕高度 设置编辑框高度
         Display display = getWindowManager().getDefaultDisplay();
@@ -248,14 +260,38 @@ public class MainActivity extends AppCompatActivity
 
         initTheme();
 
+
+    }
+
+    @SuppressLint("NewApi")
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        view_edit.setTextSize(Float.parseFloat(get_sharedString("textsize", "18")));
+
+        if (get_sharedString("scr_some", "同步滚动").equals("同步滚动")) {
+            scr_edit.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(View view, int i, int i1, int i2, int i3) {
+                    scr_res.setScrollY(i1);
+                }
+            });
+            scr_res.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(View view, int i, int i1, int i2, int i3) {
+                    scr_edit.setScrollY(i1);
+                }
+            });
+        }
     }
 
     private void initTheme() {
 
-        String theme = get_sharedString("theme","日");
-        if (theme.equals("日")){
+        String theme = get_sharedString("theme", "日");
+        if (theme.equals("日")) {
 
-        }else{
+        } else {
             NavigationView navigationView = findViewById(R.id.nav_view);
             navigationView.setBackgroundColor(Color.parseColor("#607D8B"));
 
@@ -263,6 +299,7 @@ public class MainActivity extends AppCompatActivity
             view_edit.setBackgroundColor(Color.parseColor("#90a4ae"));
             viewPager.setBackgroundColor(Color.parseColor("#90a4ae"));
             view2.setBackgroundColor(Color.parseColor("#90a4ae"));
+
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     Window window = this.getWindow();
@@ -358,7 +395,7 @@ public class MainActivity extends AppCompatActivity
         view_edit.setSelection(view_edit.getText().length());
         is_save = true;
         change_filepath(filepath);
-
+        mPerformEdit.clearHistory();
     }
 
 
@@ -407,9 +444,23 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void f5() {
-        te2.setText("字数：" + view_edit.getText().length());
+    private int getCurrentCursorLine(EditText editText) {
+        int selectionStart = Selection.getSelectionStart(editText.getText());
+        Layout layout = editText.getLayout();
+
+        if (selectionStart != -1) {
+            return layout.getLineForOffset(selectionStart) + 1;
+        }
+        return -1;
     }
+
+
+    private void f5() {
+        te2.setText("当前字数：" + view_edit.getText().length()+"   总行数:"+view_edit.getText().toString().split("\n").length);
+
+
+    }
+
 
 
     /***
@@ -447,13 +498,27 @@ public class MainActivity extends AppCompatActivity
         cons = findViewById(R.id.cons);
         tipscard = view1.findViewById(R.id.tipscard);
         view_edit = view1.findViewById(R.id.editText);
-        te2 = view1.findViewById(R.id.textView2);
-        mMarkdownView = (MarkdownView)view2.findViewById(R.id.markdownview);
+        scr_edit = view1.findViewById(R.id.scr_edit);
+        scr_res = view2.findViewById(R.id.scr_res);
 
+        te2 = view1.findViewById(R.id.textView2);
+        mMarkdownView = (MarkdownView) view2.findViewById(R.id.markdownview);
 
         viewList = new ArrayList<View>();// 将要分页显示的View装入数组中
         viewList.add(view1);
         viewList.add(view2);
+
+        view_edit.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    f5();
+                } else {
+
+                }
+            }
+        });
+
 
         mPerformEdit = new PerformEdit(view_edit);
 
@@ -477,7 +542,6 @@ public class MainActivity extends AppCompatActivity
                     case ViewPager.SCROLL_STATE_IDLE:
 
                         String text = view_edit.getText().toString();
-
                         mMarkdownView.addStyleSheet(new Github());
                         mMarkdownView.loadMarkdown(text);
 
@@ -644,7 +708,6 @@ public class MainActivity extends AppCompatActivity
 
 
                                 final File file = new File(path);
-
                                 File del_history_dir = new File("/sdcard/.MarkdownQ_del/");
                                 final File delfile = new File(del_history_dir, file.getName());
 
@@ -771,41 +834,40 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.helptext) {
             startActivity(new Intent(this, HelpActivity.class));
 
-        }else if (id == R.id.nav_setting) {
+        } else if (id == R.id.nav_setting) {
             startActivity(new Intent(this, SettingsActivity.class));
 
         } else if (id == R.id.nav_theme) {
 
-            String theme = get_sharedString("theme","日");
-            Log.d(TAG, "onNavigationItemSelected: "+theme);
-           if (theme.equals("日")){
-               set_sharedString("theme","夜");
-               Snackbar.make(cons, "主题更新 - 夜，请重启软件", Snackbar.LENGTH_LONG).setAction("重启", new View.OnClickListener() {
-                   @Override
-                   public void onClick(View view) {
-                      finish();
-                      startActivity(new Intent(MainActivity.this,MainActivity.class));
-                   }
-               }).show();
-           }
-           else {
-               set_sharedString("theme","日");
-               Snackbar.make(cons, "主题更新 - 日，请重启软件", Snackbar.LENGTH_LONG).setAction("重启", new View.OnClickListener() {
-                   @Override
-                   public void onClick(View view) {
-                       finish();
-                       startActivity(new Intent(MainActivity.this,MainActivity.class));
+            String theme = get_sharedString("theme", "日");
+            Log.d(TAG, "onNavigationItemSelected: " + theme);
+            if (theme.equals("日")) {
+                set_sharedString("theme", "夜");
+                Snackbar.make(cons, "主题更新 - 夜，请重启软件", Snackbar.LENGTH_LONG).setAction("重启", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        finish();
+                        startActivity(new Intent(MainActivity.this, MainActivity.class));
+                    }
+                }).show();
+            } else {
+                set_sharedString("theme", "日");
+                Snackbar.make(cons, "主题更新 - 日，请重启软件", Snackbar.LENGTH_LONG).setAction("重启", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        finish();
+                        startActivity(new Intent(MainActivity.this, MainActivity.class));
 
-                   }
-               }).show();
-           }
+                    }
+                }).show();
+            }
 
         } else if (id == R.id.onofftools) {
 
             if (tipscard.getVisibility() == View.GONE) {
                 tipscard.setVisibility(View.VISIBLE);
                 set_sharedString("tipscard", "显示");
-                IntroView(tipscard,"2","这里是工具栏，可以查看统计和使用快捷按钮");
+                IntroView(tipscard, "2", "这里是工具栏，可以查看统计和使用快捷按钮");
             } else {
                 tipscard.setVisibility(View.GONE);
                 set_sharedString("tipscard", "不显示");
@@ -815,19 +877,23 @@ public class MainActivity extends AppCompatActivity
 
             new MaterialDialog.Builder(this)
                     .title("选择分享方式")
-                    .items(new String[]{"分享文本(text)", "分享MD文件(.md)", "分享html文件(.html)", "分享图片(.png)"})
+                    .items(new String[]{"分享文本(text)", "分享MD文件(.md)", "分享图片(.png)"})
                     .itemsCallback(new MaterialDialog.ListCallback() {
                         @Override
                         public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
                             switch (which) {
                                 case 0:
-                                    new DabaiUtils().sendText(context, view_edit.getText().toString());
+                                    if (view_edit.getText().toString().isEmpty()) {
+                                        Snackbar.make(cons, "编辑框为空，不能分享", Snackbar.LENGTH_SHORT).show();
+                                    } else {
+                                        new DabaiUtils().sendText(context, view_edit.getText().toString());
+                                    }
                                     break;
                                 case 1:
+
                                     break;
                                 case 2:
-                                    break;
-                                case 3:
+                                    shareImage();
                                     break;
                             }
                         }
@@ -845,6 +911,110 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+
+    /**
+     * 分享图片
+     */
+    private void shareImage() {
+        if (view_edit.getText().toString().isEmpty()) {
+            Snackbar.make(cons, "编辑框为空，不能分享", Snackbar.LENGTH_SHORT).show();
+        } else {
+            showProgress("正在处理", "程序正在进行图片处理，马上就好");
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String text1 = view_edit.getText().toString();
+                            mMarkdownView.addStyleSheet(new Github());
+                            mMarkdownView.loadMarkdown(text1);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                    }
+                    md.dismiss();
+                    Bitmap bitmap = getBitmapByView(mMarkdownView);//iv是View
+                    shareSingleImage(bitmap);
+                }
+            }).start();
+
+        }
+    }
+
+    MaterialDialog md;
+
+    public void showProgress(String title, String text) {
+        md = new MaterialDialog.Builder(this)
+                .title(title)
+                .content(text)
+                .progress(true, 0)
+                .progressIndeterminateStyle(true)
+                .show();
+    }
+
+    //根据view获取bitmap
+    public static Bitmap getBitmapByView(View view) {
+        int h = 0;
+        Bitmap bitmap = null;
+        bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),
+                Bitmap.Config.RGB_565);
+        final Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+        return bitmap;
+    }
+
+    //检查sd
+    public static boolean checkSDCardAvailable() {
+        return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+    }
+
+    public static void savePhotoToSDCard(Bitmap photoBitmap, String path, String photoName) {
+        if (checkSDCardAvailable()) {
+            File dir = new File(path);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            File photoFile = new File(path, photoName + ".png");
+            FileOutputStream fileOutputStream = null;
+            try {
+                fileOutputStream = new FileOutputStream(photoFile);
+                if (photoBitmap != null) {
+                    if (photoBitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)) {
+                        fileOutputStream.flush();
+                    }
+                }
+            } catch (FileNotFoundException e) {
+                photoFile.delete();
+                e.printStackTrace();
+            } catch (IOException e) {
+                photoFile.delete();
+                e.printStackTrace();
+            } finally {
+                try {
+                    fileOutputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+    //分享单张图片
+    public void shareSingleImage(Bitmap bitmap) {
+        //由文件得到uri
+        Uri imageUri = Uri.parse(MediaStore.Images.Media.insertImage(this.getContentResolver(), bitmap, null, null));
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+        shareIntent.setType("image/*");
+        startActivity(Intent.createChooser(shareIntent, "分享到"));
+    }
 
 
     public void to_imglink(View view) {
