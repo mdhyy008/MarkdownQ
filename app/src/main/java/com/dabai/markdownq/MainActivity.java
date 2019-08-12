@@ -66,10 +66,15 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.wildma.pictureselector.PictureSelector;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -80,6 +85,15 @@ import br.tiagohm.markdownview.css.styles.Github;
 import co.mobiwise.materialintro.shape.Focus;
 import co.mobiwise.materialintro.shape.FocusGravity;
 import co.mobiwise.materialintro.view.MaterialIntroView;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import ren.qinc.edit.PerformEdit;
 
 /**
@@ -1155,23 +1169,22 @@ public class MainActivity extends AppCompatActivity
             }
 
 
-
         } catch (Exception e) {
-            Log.d(TAG, "checkKeyWord: "+e);
+            Log.d(TAG, "checkKeyWord: " + e);
         }
     }
 
     public void ins_codes(View view) {
         checkKeyWord();
         insert_text("```\n\n```\n");
-        view_edit.setSelection(view_edit.getSelectionStart()-5);
+        view_edit.setSelection(view_edit.getSelectionStart() - 5);
     }
 
 
     public void ins_bold(View view) {
         checkKeyWord();
         insert_text("****");
-        view_edit.setSelection(view_edit.getSelectionStart()-2);
+        view_edit.setSelection(view_edit.getSelectionStart() - 2);
     }
 
     public void ins_quote(View view) {
@@ -1193,12 +1206,12 @@ public class MainActivity extends AppCompatActivity
 
     public void ins_zhong(View view) {
         insert_text("``");
-        view_edit.setSelection(view_edit.getSelectionStart()-1);
+        view_edit.setSelection(view_edit.getSelectionStart() - 1);
     }
 
     public void ins_delline(View view) {
         insert_text("~~~~");
-        view_edit.setSelection(view_edit.getSelectionStart()-2);
+        view_edit.setSelection(view_edit.getSelectionStart() - 2);
     }
 
     public void ins_pic(View view) {
@@ -1213,9 +1226,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -1226,19 +1236,23 @@ public class MainActivity extends AppCompatActivity
                 new MaterialDialog.Builder(this)
                         .title("标题")
                         .positiveText("确认")
-                        .items(new String[]{"本地链接","上传到图床"})
+                        .items(new String[]{"本地链接", "上传到图床"})
                         .itemsCallback(new MaterialDialog.ListCallback() {
                             @Override
                             public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                switch (which){
+                                switch (which) {
                                     case 0:
                                         File file = new File(picturePath);
                                         checkKeyWord();
-                                        insert_text("!["+file.getName()+"](file://"+file.getAbsolutePath()+")");
+                                        insert_text("![" + file.getName() + "](file://" + file.getAbsolutePath() + ")");
 
                                         break;
 
                                     case 1:
+
+/**
+ * 上传到图床！！！！！！
+ */
 
                                         break;
                                 }
@@ -1249,6 +1263,5 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
-
 
 }
