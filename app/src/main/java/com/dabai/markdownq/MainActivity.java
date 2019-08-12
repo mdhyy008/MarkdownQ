@@ -2,11 +2,14 @@ package com.dabai.markdownq;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -30,6 +33,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -59,12 +63,16 @@ import com.dabai.markdownq.utils.FileUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
+import com.wildma.pictureselector.PictureSelector;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import br.tiagohm.markdownview.MarkdownView;
@@ -75,26 +83,24 @@ import co.mobiwise.materialintro.view.MaterialIntroView;
 import ren.qinc.edit.PerformEdit;
 
 /**
-
-//  ┏┓　　　┏┓
-//┏┛┻━━━┛┻┓
-//┃　　　　　　　┃
-//┃　　　━　　　┃
-//┃　┳┛　┗┳　┃
-//┃　　　　　　　┃
-//┃　　　┻　　　┃
-//┃　　　　　　　┃
-//┗━┓　　　┏━┛
-//    ┃　　　┃   神兽保佑
-//    ┃　　　┃   代码无BUG！
-//    ┃　　　┗━━━┓
-//    ┃　　　　　　　┣┓
-//    ┃　　　　　　　┏┛
-//    ┗┓┓┏━┳┓┏┛
-//      ┃┫┫　┃┫┫
-//      ┗┻┛　┗┻┛
-
-**/
+ * //  ┏┓　　　┏┓
+ * //┏┛┻━━━┛┻┓
+ * //┃　　　　　　　┃
+ * //┃　　　━　　　┃
+ * //┃　┳┛　┗┳　┃
+ * //┃　　　　　　　┃
+ * //┃　　　┻　　　┃
+ * //┃　　　　　　　┃
+ * //┗━┓　　　┏━┛
+ * //    ┃　　　┃   神兽保佑
+ * //    ┃　　　┃   代码无BUG！
+ * //    ┃　　　┗━━━┓
+ * //    ┃　　　　　　　┣┓
+ * //    ┃　　　　　　　┏┛
+ * //    ┗┓┓┏━┳┓┏┛
+ * //      ┃┫┫　┃┫┫
+ * //      ┗┻┛　┗┻┛
+ **/
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -184,7 +190,7 @@ public class MainActivity extends AppCompatActivity
     private void IntroView(View v, String id, String text) {
 
         new MaterialIntroView.Builder(this)
-                .enableDotAnimation(true)
+                .enableDotAnimation(false)
                 .enableIcon(true)
                 .setFocusGravity(FocusGravity.CENTER)
                 .setFocusType(Focus.ALL)
@@ -259,7 +265,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         initTheme();
-
+        f5();
 
     }
 
@@ -311,7 +317,8 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        view_edit.setTypeface(Typeface.createFromAsset(getAssets(), "Roboto-Regular.ttf"));
+        view_edit.setTypeface(Typeface.createFromAsset(getAssets(), "Roboto1-Regular.ttf"));
+
 
     }
 
@@ -456,11 +463,10 @@ public class MainActivity extends AppCompatActivity
 
 
     private void f5() {
-        te2.setText("当前字数：" + view_edit.getText().length()+"   总行数:"+view_edit.getText().toString().split("\n").length);
+        te2.setText("当前字数：" + view_edit.getText().length() + "   总行数:" + view_edit.getText().toString().split("\n").length);
 
 
     }
-
 
 
     /***
@@ -507,17 +513,6 @@ public class MainActivity extends AppCompatActivity
         viewList = new ArrayList<View>();// 将要分页显示的View装入数组中
         viewList.add(view1);
         viewList.add(view2);
-
-        view_edit.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    f5();
-                } else {
-
-                }
-            }
-        });
 
 
         mPerformEdit = new PerformEdit(view_edit);
@@ -1038,5 +1033,222 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences sp = this.getSharedPreferences("data", 0);
         return sp.getString(key, moren);
     }
+
+
+    /**
+     * 光标处插入文本
+     *
+     * @param text
+     */
+    public void insert_text(String text) {
+        int index = view_edit.getSelectionStart();
+        Editable editable = view_edit.getText();
+        editable.insert(index, text);
+
+    }
+
+
+    /**
+     * 下面是工具栏的小可爱们施展技能的地方
+     *
+     * @param view
+     */
+
+    public void ins_date(View view) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        insert_text(dateFormat.format(new Date()));
+    }
+
+
+    public void ins_title(View view) {
+        new MaterialDialog.Builder(this)
+                .title("插入大标题")
+                .items(new String[]{"h1", "h2", "h3", "h4", "h5", "h6"})
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                        checkKeyWord();
+                        switch (which) {
+                            case 0:
+                                insert_text("# ");
+                                break;
+                            case 1:
+                                insert_text("## ");
+                                break;
+                            case 2:
+                                insert_text("### ");
+                                break;
+                            case 3:
+                                insert_text("#### ");
+                                break;
+                            case 4:
+                                insert_text("##### ");
+                                break;
+                            case 5:
+                                insert_text("###### ");
+                                break;
+                        }
+                    }
+                })
+                .show();
+    }
+
+
+    public void ins_ul(View view) {
+        checkKeyWord();
+        insert_text("- ");
+    }
+
+    public void ins_ui(View view) {
+        try {
+            String starttext = view_edit.getText().toString().split("\n")[getCurrentCursorLine(view_edit) - 1];
+            if (starttext.contains(".")) {
+                insert_text("\n");
+            }
+            String num = starttext.substring(0, starttext.indexOf("."));
+            insert_text((Integer.parseInt(num) + 1) + ". ");
+        } catch (Exception e) {
+            insert_text("1. ");
+        }
+    }
+
+
+    public void ins_link(View view) {
+
+        final View diaview = getLayoutInflater().inflate(R.layout.dialog_inslink, null);
+        new AlertDialog.Builder(this)
+                .setTitle("插入链接")
+                .setView(diaview)
+                .setPositiveButton("插入", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        TextInputLayout til1 = diaview.findViewById(R.id.til1);
+                        TextInputLayout til2 = diaview.findViewById(R.id.til2);
+
+                        String text = til1.getEditText().getText().toString();
+                        String link = til2.getEditText().getText().toString();
+
+                        checkKeyWord();
+
+                        insert_text("[" + text + "](" + link + ")");
+                    }
+                })
+                .show();
+
+    }
+
+    private void checkKeyWord() {
+        try {
+            String starttext = view_edit.getText().toString().split("\n")[getCurrentCursorLine(view_edit) - 1];
+
+            if (starttext.contains("#") ||
+                    starttext.contains("-")
+                    || starttext.contains(".")
+                    || starttext.contains(">")
+                    || starttext.contains("*")
+                    || starttext.contains("[")
+                    || starttext.contains("(")
+                    || starttext.contains("`")
+                    || starttext.contains("/")
+                    || starttext.contains("_")) {
+                insert_text("\n");
+            }
+
+
+
+        } catch (Exception e) {
+            Log.d(TAG, "checkKeyWord: "+e);
+        }
+    }
+
+    public void ins_codes(View view) {
+        checkKeyWord();
+        insert_text("```\n\n```\n");
+        view_edit.setSelection(view_edit.getSelectionStart()-5);
+    }
+
+
+    public void ins_bold(View view) {
+        checkKeyWord();
+        insert_text("****");
+        view_edit.setSelection(view_edit.getSelectionStart()-2);
+    }
+
+    public void ins_quote(View view) {
+        checkKeyWord();
+        insert_text("> ");
+    }
+
+    public void ins_fengeline(View view) {
+        try {
+            String starttext = view_edit.getText().toString().split("\n")[getCurrentCursorLine(view_edit) - 1];
+            if (!starttext.isEmpty()) {
+                insert_text("\n");
+            }
+        } catch (Exception e) {
+        }
+        insert_text("-------\n");
+
+    }
+
+    public void ins_zhong(View view) {
+        insert_text("``");
+        view_edit.setSelection(view_edit.getSelectionStart()-1);
+    }
+
+    public void ins_delline(View view) {
+        insert_text("~~~~");
+        view_edit.setSelection(view_edit.getSelectionStart()-2);
+    }
+
+    public void ins_pic(View view) {
+
+        /**
+         * 图库选择  可裁剪
+         *
+         * */
+        PictureSelector
+                .create(MainActivity.this, PictureSelector.SELECT_REQUEST_CODE)
+                .selectPicture(false, 200, 200, 1, 1);
+
+    }
+
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        /*结果回调*/
+        if (requestCode == PictureSelector.SELECT_REQUEST_CODE) {
+            if (data != null) {
+                final String picturePath = data.getStringExtra(PictureSelector.PICTURE_PATH);
+                new MaterialDialog.Builder(this)
+                        .title("标题")
+                        .positiveText("确认")
+                        .items(new String[]{"本地链接","上传到图床"})
+                        .itemsCallback(new MaterialDialog.ListCallback() {
+                            @Override
+                            public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                switch (which){
+                                    case 0:
+                                        File file = new File(picturePath);
+                                        checkKeyWord();
+                                        insert_text("!["+file.getName()+"](file://"+file.getAbsolutePath()+")");
+
+                                        break;
+
+                                    case 1:
+
+                                        break;
+                                }
+                            }
+                        })
+                        .show();
+
+            }
+        }
+    }
+
 
 }

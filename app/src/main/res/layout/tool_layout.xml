@@ -2,6 +2,7 @@
 
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/tipscard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -34,12 +35,37 @@
             android:orientation="horizontal"
             android:padding="5dp">
 
-            <TextView
-                android:id="@+id/textView3"
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:srcCompat="@drawable/atime"
+                tools:ignore="VectorDrawableCompat"
+                android:background="#ffffffff"
                 android:layout_weight="1"
-                android:text="工具栏 - 未开发" />
+                android:onClick="ins_date"
+                />
+
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/alist1"
+                tools:ignore="VectorDrawableCompat"
+                android:background="#ffffffff"
+                android:layout_weight="1"/>
+
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/alist2"
+                tools:ignore="VectorDrawableCompat"
+                android:background="#ffffffff"
+                android:layout_weight="1"/>
+
+
+
+
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
