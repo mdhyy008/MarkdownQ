@@ -24,7 +24,8 @@
         <item
             android:id="@+id/onofftools"
             android:icon="@drawable/ic_menu_manage"
-            android:title="开/关工具栏"/>
+            android:title="开/关工具栏"
+            android:visible="false"/>
 
         <item
             android:id="@+id/sharetext"

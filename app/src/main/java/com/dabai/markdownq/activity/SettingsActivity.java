@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
@@ -32,6 +33,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.dabai.markdownq.MainActivity;
 import com.dabai.markdownq.R;
 import com.dabai.markdownq.utils.DabaiUtils;
+import com.dabai.markdownq.utils.HtmlUtils;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -63,6 +65,8 @@ public class SettingsActivity extends AppCompatActivity {
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
 
+        private AlertDialog adddd;
+
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
@@ -88,6 +92,11 @@ public class SettingsActivity extends AppCompatActivity {
         public boolean onPreferenceTreeClick(Preference preference) {
 
             switch (preference.getKey()) {
+                case "ver":
+
+                    updata();
+
+                    break;
                 case "deldir":
 
                     huanyuan();
@@ -167,6 +176,82 @@ public class SettingsActivity extends AppCompatActivity {
 
             return super.onPreferenceTreeClick(preference);
         }
+
+        private void updata() {
+
+            adddd = new AlertDialog.Builder(getContext()).setTitle("更新")
+                    .setMessage("当前版本 : " + new DabaiUtils().getVersionName(getContext())
+                            + "\n酷安最新版本 : " + "正在检查")
+                    .setPositiveButton("跳转应用市场", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.setData(Uri.parse("market://details?id=" + getContext().getPackageName()));
+                            if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(getContext(), "您的系统中没有安装应用市场", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    })
+                    .show();
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updata_message();
+                        }
+                    });
+                }
+            }).start();
+        }
+
+
+        String nettitle;
+
+        private void updata_message() {
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        String link = "https://www.coolapk.com/apk/com.dabai.markdownq";
+                        nettitle = new HtmlUtils().getHtmlTitle(link).get(0);
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String[] res = nettitle.split(" - ");
+                                adddd.setMessage("当前版本 : " + new DabaiUtils().getVersionName(getContext())
+                                        + "\n酷安最新版本 : " + res[1]);
+                            }
+                        });
+
+                    } catch (Exception e) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adddd.setMessage("当前版本 : " + new DabaiUtils().getVersionName(getContext())
+                                        + "\n酷安最新版本 : 网络出现问题");
+                            }
+                        });
+
+                    }
+                }
+            }).start();
+
+
+        }
+
+
+
+
+
+
 
         private void huanyuan() {
 

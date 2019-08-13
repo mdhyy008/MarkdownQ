@@ -19,7 +19,19 @@
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
+
+
+
+    <style name="StartTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        //引用上面start_activity_background.xml背景文件
+        <item name="android:windowBackground">@drawable/start_activity_background</item>
+        <item name="android:windowFullscreen">true</item> //填充整个窗口设置
+    </style>
+
+
+
 
 </resources>

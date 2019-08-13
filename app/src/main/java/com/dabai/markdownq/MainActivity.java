@@ -13,15 +13,20 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Layout;
 import android.text.Selection;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Display;
@@ -37,9 +42,12 @@ import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -55,29 +63,43 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.dabai.markdownq.activity.AboutActivity;
 import com.dabai.markdownq.activity.FeedActivity;
 import com.dabai.markdownq.activity.HelpActivity;
 import com.dabai.markdownq.activity.SettingsActivity;
 import com.dabai.markdownq.utils.DabaiUtils;
 import com.dabai.markdownq.utils.FileUtils;
+import com.dabai.markdownq.utils.OnsmmsUpload;
+import com.dabai.markdownq.utils.SmmsPostModel;
+import com.dabai.markdownq.utils.SmmsRequestModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.wildma.pictureselector.PictureSelector;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.Callback;
+import com.zhy.http.okhttp.callback.StringCallback;
 
+import org.commonmark.node.Node;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import br.tiagohm.markdownview.MarkdownView;
@@ -86,7 +108,6 @@ import co.mobiwise.materialintro.shape.Focus;
 import co.mobiwise.materialintro.shape.FocusGravity;
 import co.mobiwise.materialintro.view.MaterialIntroView;
 import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -95,26 +116,52 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import ren.qinc.edit.PerformEdit;
+import ru.noties.markwon.Markwon;
 
 /**
  * //  ┏┓　　　┏┓
- * //┏┛┻━━━┛┻┓
- * //┃　　　　　　　┃
- * //┃　　　━　　　┃
- * //┃　┳┛　┗┳　┃
- * //┃　　　　　　　┃
- * //┃　　　┻　　　┃
- * //┃　　　　　　　┃
- * //┗━┓　　　┏━┛
+ * //┏┛┻━━━┛┻┓━━━━━━━
+ * //┃　　　　　　　   ┃
+ * //┃　　　━　　　   ┃
+ * //┃　┳┛　  ┗┳　  ┃
+ * //┃　　　　　　　 ┃
+ * //┃　　　┻　　　 ┃
+ * //┃　　　　　　 ┃
+ * //┗━┓　　　  ┏━┛
  * //    ┃　　　┃   神兽保佑
  * //    ┃　　　┃   代码无BUG！
  * //    ┃　　　┗━━━┓
- * //    ┃　　　　　　　┣┓
- * //    ┃　　　　　　　┏┛
+ * //    ┃　　　　　┣┓
+ * //    ┃　　　　 ┏┛
  * //    ┗┓┓┏━┳┓┏┛
  * //      ┃┫┫　┃┫┫
  * //      ┗┻┛　┗┻┛
  **/
+
+
+/**
+ * //
+ * //                            _ooOoo_
+ * //                           o8888888o
+ * //                           88" . "88
+ * //                           (| -_- |)
+ * //                           O\  =  /O
+ * //                        ____/`---'\____
+ * //                      .'  \\|     |//  `.
+ * //                     /  \\|||  :  |||//  \
+ * //                    /  _||||| -:- |||||-  \
+ * //                    |   | \\\  -  /// |   |
+ * //                    | \_|  ''\---/''  |   |
+ * //                    \  .-\__  `-`  ___/-. /
+ * //                  ___`. .'  /--.--\  `. . __
+ * //               ."" '<  `.___\_<|>_/___.'  >'"".
+ * //              | | :  `- \`.;`\ _ /`;.`/ - ` : | |
+ * //              \  \ `-.   \_ __\ /__ _/   .-` /  /
+ * //         ======`-.____`-.___\_____/___.-`____.-'======
+ * //                            `=---='
+ * //        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ **/
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -127,9 +174,7 @@ public class MainActivity extends AppCompatActivity
 
     ScrollView scr_edit;
     ScrollView scr_res;
-
-
-    TextView te2;
+    TextView te2, res_textview;
     CardView tipscard;
     // 变量
 
@@ -140,7 +185,6 @@ public class MainActivity extends AppCompatActivity
 
     final String TAG = "dabai";
 
-
     private boolean is_save = false;
     private FloatingActionButton fab;
     private MarkdownView mMarkdownView;
@@ -148,10 +192,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -162,7 +209,11 @@ public class MainActivity extends AppCompatActivity
         fab.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                hideInput();
+                try {
+                    hideInput();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 save_file();
                 viewPager.setCurrentItem(1);
                 return true;
@@ -174,9 +225,13 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
             @Override
             public void onDrawerOpened(View drawerView) {
-                hideInput();
-                super.onDrawerOpened(drawerView);
 
+                super.onDrawerOpened(drawerView);
+                try {
+                    hideInput();
+                } catch (Exception e) {
+
+                }
             }
         };
 
@@ -185,9 +240,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         context = getApplicationContext();
-        /**
-         * ...
-         */
 
         init_val();
         init();
@@ -225,6 +277,7 @@ public class MainActivity extends AppCompatActivity
     @SuppressLint("NewApi")
     private void init() {
 
+        mMarkdownView = view2.findViewById(R.id.markdownview);
 
         //检查权限
         checkPermissio();
@@ -384,6 +437,109 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * 初始化界面
+     */
+    private void init_val() {
+
+
+        LayoutInflater inflater = getLayoutInflater();
+
+
+        viewPager = findViewById(R.id.viewpager);
+
+        view1 = inflater.inflate(R.layout.pages_edit, null);
+        view2 = inflater.inflate(R.layout.pages_result, null);
+
+        cons = findViewById(R.id.cons);
+        tipscard = view1.findViewById(R.id.tipscard);
+        view_edit = view1.findViewById(R.id.editText);
+        scr_edit = view1.findViewById(R.id.scr_edit);
+        scr_res = view2.findViewById(R.id.scr_res);
+
+        te2 = view1.findViewById(R.id.textView2);
+
+
+        viewList = new ArrayList<View>();// 将要分页显示的View装入数组中
+        viewList.add(view1);
+        viewList.add(view2);
+        mPerformEdit = new PerformEdit(view_edit);
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            //下面三个回调缺一不可，否则就会编译报错
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int
+                    positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 1) {
+                    fab.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                switch (state) {
+                    case ViewPager.SCROLL_STATE_IDLE:
+
+                        String text = view_edit.getText().toString();
+
+                        mMarkdownView.addStyleSheet(new Github());
+                        mMarkdownView.loadMarkdown(text);
+                        mMarkdownView.startLayoutAnimation();
+
+                        break;
+                    case ViewPager.SCROLL_STATE_DRAGGING:
+
+                        try {
+
+                            hideInput();
+
+                        } catch (Exception e) {
+                            // Snackbar.make(cons, "异常：" + e.getMessage(), Snackbar.LENGTH_SHORT).show();
+                        }
+
+                        break;
+                    case ViewPager.SCROLL_STATE_SETTLING:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+        PagerAdapter pagerAdapter = new PagerAdapter() {
+
+            @Override
+            public boolean isViewFromObject(View arg0, Object arg1) {
+                // TODO Auto-generated method stub
+                return arg0 == arg1;
+            }
+
+            @Override
+            public int getCount() {
+                // TODO Auto-generated method stub
+                return viewList.size();
+            }
+
+            @Override
+            public void destroyItem(ViewGroup container, int position,
+                                    Object object) {
+                // TODO Auto-generated method stub
+                container.removeView(viewList.get(position));
+            }
+
+            @Override
+            public Object instantiateItem(ViewGroup container, int position) {
+                // TODO Auto-generated method stub
+                container.addView(viewList.get(position));
+                return viewList.get(position);
+            }
+        };
+        viewPager.setAdapter(pagerAdapter);
+    }
 
     /**
      * 检查保存了没
@@ -500,116 +656,47 @@ public class MainActivity extends AppCompatActivity
         return get_sharedString("filepath", "");
     }
 
-
     /**
-     * 初始化界面
+     * 加载本地图片
+     *
+     * @param url
+     * @return
      */
-    private void init_val() {
+    public static Bitmap getLoacalBitmap(String url) {
+        try {
+            FileInputStream fis = new FileInputStream(url);
+            return BitmapFactory.decodeStream(fis);  ///把流转化为Bitmap图片
 
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-        LayoutInflater inflater = getLayoutInflater();
-
-
-        viewPager = findViewById(R.id.viewpager);
-
-        view1 = inflater.inflate(R.layout.pages_edit, null);
-        view2 = inflater.inflate(R.layout.pages_result, null);
-
-        cons = findViewById(R.id.cons);
-        tipscard = view1.findViewById(R.id.tipscard);
-        view_edit = view1.findViewById(R.id.editText);
-        scr_edit = view1.findViewById(R.id.scr_edit);
-        scr_res = view2.findViewById(R.id.scr_res);
-
-        te2 = view1.findViewById(R.id.textView2);
-        mMarkdownView = (MarkdownView) view2.findViewById(R.id.markdownview);
-
-        viewList = new ArrayList<View>();// 将要分页显示的View装入数组中
-        viewList.add(view1);
-        viewList.add(view2);
-
-
-        mPerformEdit = new PerformEdit(view_edit);
-
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            //下面三个回调缺一不可，否则就会编译报错
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int
-                    positionOffsetPixels) {
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                if (position == 1) {
-                    fab.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                switch (state) {
-                    case ViewPager.SCROLL_STATE_IDLE:
-
-                        String text = view_edit.getText().toString();
-                        mMarkdownView.addStyleSheet(new Github());
-                        mMarkdownView.loadMarkdown(text);
-
-                        break;
-                    case ViewPager.SCROLL_STATE_DRAGGING:
-
-                        try {
-
-                            hideInput();
-
-                        } catch (Exception e) {
-                            // Snackbar.make(cons, "异常：" + e.getMessage(), Snackbar.LENGTH_SHORT).show();
-                        }
-
-                        break;
-                    case ViewPager.SCROLL_STATE_SETTLING:
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
-
-        PagerAdapter pagerAdapter = new PagerAdapter() {
-
-            @Override
-            public boolean isViewFromObject(View arg0, Object arg1) {
-                // TODO Auto-generated method stub
-                return arg0 == arg1;
-            }
-
-            @Override
-            public int getCount() {
-                // TODO Auto-generated method stub
-                return viewList.size();
-            }
-
-            @Override
-            public void destroyItem(ViewGroup container, int position,
-                                    Object object) {
-                // TODO Auto-generated method stub
-                container.removeView(viewList.get(position));
-            }
-
-            @Override
-            public Object instantiateItem(ViewGroup container, int position) {
-                // TODO Auto-generated method stub
-                container.addView(viewList.get(position));
-                return viewList.get(position);
-            }
-        };
-        viewPager.setAdapter(pagerAdapter);
+    public void c(String assetsFileName, String OutFileName) throws IOException {
+        File f = new File(OutFileName);
+        if (f.exists())
+            f.delete();
+        f = new File(OutFileName);
+        f.createNewFile();
+        InputStream I = getAssets().open(assetsFileName);
+        OutputStream O = new FileOutputStream(OutFileName);
+        byte[] b = new byte[1024];
+        int l = I.read(b);
+        while (l > 0) {
+            O.write(b, 0, l);
+            l = I.read(b);
+        }
+        O.flush();
+        I.close();
+        O.close();
     }
 
 
     /**
      * 隐藏输入法
      */
-    public void hideInput() {
+    public void hideInput() throws Exception {
         ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
@@ -637,6 +724,16 @@ public class MainActivity extends AppCompatActivity
             case R.id.go:
                 //重做
                 mPerformEdit.redo();
+                break;
+            case R.id.tools:
+                if (tipscard.getVisibility() == View.GONE) {
+                    tipscard.setVisibility(View.VISIBLE);
+                    set_sharedString("tipscard", "显示");
+                    IntroView(tipscard, "2", "这里是工具栏，可以查看统计和使用快捷按钮");
+                } else {
+                    tipscard.setVisibility(View.GONE);
+                    set_sharedString("tipscard", "不显示");
+                }
                 break;
 
         }
@@ -873,14 +970,6 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.onofftools) {
 
-            if (tipscard.getVisibility() == View.GONE) {
-                tipscard.setVisibility(View.VISIBLE);
-                set_sharedString("tipscard", "显示");
-                IntroView(tipscard, "2", "这里是工具栏，可以查看统计和使用快捷按钮");
-            } else {
-                tipscard.setVisibility(View.GONE);
-                set_sharedString("tipscard", "不显示");
-            }
 
         } else if (id == R.id.sharetext) {
 
@@ -910,6 +999,13 @@ public class MainActivity extends AppCompatActivity
                     .show();
 
         } else if (id == R.id.nav_share) {
+
+
+            View view = getLayoutInflater().inflate(R.layout.dialog_shareapp, null);
+            new MaterialDialog.Builder(this)
+                    .title("分享软件")
+                    .customView(view, true)
+                    .show();
 
         } else if (id == R.id.nav_send) {
             startActivity(new Intent(this, FeedActivity.class));
@@ -959,9 +1055,17 @@ public class MainActivity extends AppCompatActivity
     public void showProgress(String title, String text) {
         md = new MaterialDialog.Builder(this)
                 .title(title)
+                .cancelable(false)
                 .content(text)
                 .progress(true, 0)
                 .progressIndeterminateStyle(true)
+                .positiveText("取消")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        md.dismiss();
+                    }
+                })
                 .show();
     }
 
@@ -1234,9 +1338,10 @@ public class MainActivity extends AppCompatActivity
             if (data != null) {
                 final String picturePath = data.getStringExtra(PictureSelector.PICTURE_PATH);
                 new MaterialDialog.Builder(this)
-                        .title("标题")
-                        .positiveText("确认")
-                        .items(new String[]{"本地链接", "上传到图床"})
+                        .title("选择链接类型")
+                        .items(new String[]{"本地链接", "网络链接"})
+                        .cancelable(false)
+                        .positiveText("取消")
                         .itemsCallback(new MaterialDialog.ListCallback() {
                             @Override
                             public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
@@ -1249,19 +1354,63 @@ public class MainActivity extends AppCompatActivity
                                         break;
 
                                     case 1:
+                                        //上传到图床！！！！！！
 
-/**
- * 上传到图床！！！！！！
- */
-
+                                        upload_pic(picturePath);
                                         break;
                                 }
                             }
                         })
                         .show();
-
             }
         }
     }
 
+    private void upload_pic(String picturePath) {
+        showProgress("正在上传图片", "正在把图片上传到图床，请稍等");
+        final File picfile = new File(picturePath);
+
+        String url = "https://sm.ms/api/upload";
+        String ua = "Mozilla/5.0 (Linux; Android ; M5 Build/MRA58K) MarkdownQ/1.0";
+
+        HashMap<String, String> header = new HashMap<String, String>();
+        header.put("User-Agent", ua);
+
+        OkHttpUtils.post()
+                .url(url)
+                .headers(header)
+                .addFile("smfile", picfile.getName(), picfile)
+                .addParams("ssl", "true")
+                .build()
+                .execute(new StringCallback() {
+
+                    @Override
+                    public void onError(Call call, Exception e, int i) {
+                        md.dismiss();
+                        Snackbar.make(cons, "上传失败"+e.getMessage(), Snackbar.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onResponse(String s, int i) {
+
+                        JSONObject requestjson = null;
+                        try {
+                            md.dismiss();
+                            requestjson = new JSONObject(s);
+                            JSONObject datajson = requestjson.getJSONObject("data");
+                            String link = datajson.getString("url");
+                            checkKeyWord();
+                            insert_text("![" + picfile.getName() + "](" + link.replace("\\","") + ")");
+
+                        } catch (Exception e) {
+                            md.dismiss();
+                            Snackbar.make(cons, "上传失败:"+e.getMessage(), Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    public void share_downlink(View view) {
+        new DabaiUtils().sendText(context, "推荐应用 【MarkdownQ】： https://www.coolapk.com/apk/com.dabai.markdownq  分享自【MarkdownQ】 ");
+    }
 }
