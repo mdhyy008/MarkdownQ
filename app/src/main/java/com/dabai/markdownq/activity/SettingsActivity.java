@@ -167,6 +167,9 @@ public class SettingsActivity extends AppCompatActivity {
                 case "github":
                     startActivity(new Intent(getContext(), GithubActivity.class));
                     break;
+                case "uplog":
+                    startActivity(new Intent(getContext(), UpLogActivity.class));
+                    break;
                 case "workdir":
                     change_workdir();
 

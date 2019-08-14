@@ -3,16 +3,21 @@ package com.dabai.markdownq.activity;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.dabai.markdownq.R;
+
+import br.tiagohm.markdownview.MarkdownView;
+import br.tiagohm.markdownview.css.styles.Github;
 
 public class AboutActivity extends AppCompatActivity {
 
@@ -26,9 +31,13 @@ public class AboutActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         initTheme();
+
+        MarkdownView mv = findViewById(R.id.aboutmarkdown);
+        mv.addStyleSheet(new Github());
+        mv.loadMarkdownFromAsset("关于.md");
+
+
     }
-
-
 
 
     /**

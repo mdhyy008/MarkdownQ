@@ -11,8 +11,13 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.dabai.markdownq.R;
+import com.zzhoujay.markdown.MarkDown;
+
+import br.tiagohm.markdownview.MarkdownView;
+import br.tiagohm.markdownview.css.styles.Github;
 
 public class GithubActivity extends AppCompatActivity {
 
@@ -26,6 +31,13 @@ public class GithubActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         initTheme();
+
+        MarkdownView mv = findViewById(R.id.gitmarkdown);
+        mv.addStyleSheet(new Github());
+        mv.loadMarkdownFromAsset("开源相关.md");
+
+
+
     }
 
 

@@ -28,6 +28,13 @@
 
     <PreferenceCategory app:title="其他">
 
+
+        <PreferenceScreen
+            android:icon="@drawable/uplog1"
+            android:key="uplog"
+            android:title="更新日志" />
+
+
         <PreferenceScreen
             android:icon="@drawable/ver1"
             android:key="ver"

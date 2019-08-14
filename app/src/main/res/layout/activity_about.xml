@@ -6,4 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".activity.AboutActivity">
 
+    <br.tiagohm.markdownview.MarkdownView
+        android:id="@+id/aboutmarkdown"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </br.tiagohm.markdownview.MarkdownView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

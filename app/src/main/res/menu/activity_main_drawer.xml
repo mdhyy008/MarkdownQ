@@ -3,36 +3,46 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="none">
+    <item android:title="基础功能">
+        <menu>
+            <item
+                android:id="@+id/newfile"
+                android:icon="@drawable/newfile3"
+                android:title="新建空文档" />
 
-        <item
-            android:id="@+id/newfile"
-            android:icon="@drawable/newfile3"
-            android:title="新建空文档"
-            />
-
-        <item
-            android:id="@+id/openfile"
-            android:icon="@drawable/openfile3"
-            android:title="打开文件" />
+            <item
+                android:id="@+id/openfile"
+                android:icon="@drawable/openfile3"
+                android:title="打开文件" />
 
 
-        <item
-            android:id="@+id/helptext"
-            android:icon="@drawable/help2"
-            android:title="语法参考" />
-        <item
-            android:id="@+id/onofftools"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="开/关工具栏"
-            android:visible="false"/>
+            <item
+                android:id="@+id/helptext"
+                android:icon="@drawable/help2"
+                android:title="语法参考" />
+            <item
+                android:id="@+id/onofftools"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="开/关工具栏"
+                android:visible="false" />
 
-        <item
-            android:id="@+id/sharetext"
-            android:icon="@drawable/sharetext3"
-            android:title="分享内容" />
+            <item
+                android:id="@+id/sharetext"
+                android:icon="@drawable/sharetext3"
+                android:title="分享内容" />
+        </menu>
+    </item>
 
-    </group>
+
+
+    <item android:title="高级功能">
+        <menu>
+            <item
+                android:id="@+id/shells"
+                android:icon="@drawable/shell1"
+                android:title="SHELL脚本" />
+        </menu>
+    </item>
 
     <item android:title="程序相关">
         <menu>
