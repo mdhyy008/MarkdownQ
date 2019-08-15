@@ -18,7 +18,9 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+
+        >
 
         <ScrollView
         android:id="@+id/scr_res"
@@ -29,7 +31,9 @@
             <br.tiagohm.markdownview.MarkdownView
                 android:id="@+id/markdownview"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginRight="50dp"
+                >
 
             </br.tiagohm.markdownview.MarkdownView>
 

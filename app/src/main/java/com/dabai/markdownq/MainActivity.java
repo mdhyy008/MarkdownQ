@@ -8,25 +8,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Layout;
 import android.text.Selection;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Display;
@@ -39,16 +35,13 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -64,27 +57,21 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.dabai.markdownq.activity.AboutActivity;
+import com.bumptech.glide.load.resource.bitmap.BitmapDecoder;
+import com.bumptech.glide.load.resource.bitmap.BitmapEncoder;
 import com.dabai.markdownq.activity.FeedActivity;
 import com.dabai.markdownq.activity.HelpActivity;
 import com.dabai.markdownq.activity.SettingsActivity;
 import com.dabai.markdownq.utils.DabaiUtils;
 import com.dabai.markdownq.utils.FileUtils;
-import com.dabai.markdownq.utils.OnsmmsUpload;
-import com.dabai.markdownq.utils.SmmsPostModel;
-import com.dabai.markdownq.utils.SmmsRequestModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.wildma.pictureselector.PictureSelector;
 import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.callback.Callback;
 import com.zhy.http.okhttp.callback.StringCallback;
 
-import org.commonmark.node.Node;
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -94,9 +81,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -109,15 +93,7 @@ import co.mobiwise.materialintro.shape.Focus;
 import co.mobiwise.materialintro.shape.FocusGravity;
 import co.mobiwise.materialintro.view.MaterialIntroView;
 import okhttp3.Call;
-import okhttp3.FormBody;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 import ren.qinc.edit.PerformEdit;
-import ru.noties.markwon.Markwon;
 
 /**
  * //  ┏┓　　　┏┓
@@ -245,6 +221,7 @@ public class MainActivity extends AppCompatActivity
         init_val();
         init();
 
+
         /**
          * 引导动画
          */
@@ -371,8 +348,8 @@ public class MainActivity extends AppCompatActivity
 
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#607D8B")));
             view_edit.setBackgroundColor(Color.parseColor("#90a4ae"));
-            viewPager.setBackgroundColor(Color.parseColor("#90a4ae"));
-            view2.setBackgroundColor(Color.parseColor("#90a4ae"));
+            view1.setBackgroundColor(Color.parseColor("#90a4ae"));
+            //view2.setBackgroundColor(Color.parseColor("#90a4ae"));
 
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -732,15 +709,34 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.see:
+                try {
+                    hideInput();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (viewPager.getCurrentItem() == 1){
+                    Snackbar.make(cons,"已经在预览模式了",Snackbar.LENGTH_SHORT).show();
+
+                }else {
+                    viewPager.setCurrentItem(1);
+                }
+                break;
             case R.id.undo:
                 //撤销
                 mPerformEdit.undo();
+
+                mMarkdownView.loadMarkdown(view_edit.getText().toString());
                 break;
             case R.id.go:
                 //重做
                 mPerformEdit.redo();
+                mMarkdownView.loadMarkdown(view_edit.getText().toString());
+
                 break;
             case R.id.tools:
+
+
                 if (tipscard.getVisibility() == View.GONE) {
                     tipscard.setVisibility(View.VISIBLE);
                     set_sharedString("tipscard", "显示");
@@ -749,6 +745,8 @@ public class MainActivity extends AppCompatActivity
                     tipscard.setVisibility(View.GONE);
                     set_sharedString("tipscard", "不显示");
                 }
+
+                viewPager.setCurrentItem(0);
                 break;
 
         }
@@ -1273,6 +1271,7 @@ public class MainActivity extends AppCompatActivity
     private void checkKeyWord() {
         try {
             String starttext = view_edit.getText().toString().split("\n")[getCurrentCursorLine(view_edit) - 1];
+
 
             if (starttext.contains("#") ||
                     starttext.contains("-")

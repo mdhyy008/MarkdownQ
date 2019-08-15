@@ -8,7 +8,6 @@
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="300dp"
-        app:srcCompat="@drawable/qrcode_497"
         android:layout_margin="10dp"
         />
 

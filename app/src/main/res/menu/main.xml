@@ -13,13 +13,19 @@
         android:title="前进"
         app:showAsAction="always" />
 
+
+
     <item
         android:id="@+id/tools"
         android:icon="@drawable/atool1"
         android:title="工具栏"
         app:showAsAction="always" />
 
-
+    <item
+        android:id="@+id/see"
+        android:icon="@drawable/play1"
+        android:title="预览"
+        app:showAsAction="always" />
     <item
         android:id="@+id/help"
         android:icon="@drawable/help1"
