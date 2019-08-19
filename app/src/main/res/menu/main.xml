@@ -19,7 +19,8 @@
         android:id="@+id/tools"
         android:icon="@drawable/atool1"
         android:title="工具栏"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        android:visible="false"/>
 
     <item
         android:id="@+id/see"

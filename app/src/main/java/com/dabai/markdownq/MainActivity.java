@@ -1,8 +1,10 @@
 package com.dabai.markdownq;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,11 +27,13 @@ import android.text.Layout;
 import android.text.Selection;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -38,10 +42,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -62,6 +68,8 @@ import com.bumptech.glide.load.resource.bitmap.BitmapEncoder;
 import com.dabai.markdownq.activity.FeedActivity;
 import com.dabai.markdownq.activity.HelpActivity;
 import com.dabai.markdownq.activity.SettingsActivity;
+import com.dabai.markdownq.translate.TranslateCallback;
+import com.dabai.markdownq.translate.TranslateUtil;
 import com.dabai.markdownq.utils.DabaiUtils;
 import com.dabai.markdownq.utils.FileUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -152,7 +160,7 @@ public class MainActivity extends AppCompatActivity
     ScrollView scr_edit;
     ScrollView scr_res;
     TextView te2, res_textview;
-    CardView tipscard;
+    CardView tipscard, textvao;
     // 变量
 
     private PerformEdit mPerformEdit;
@@ -165,6 +173,8 @@ public class MainActivity extends AppCompatActivity
     private boolean is_save = false;
     private FloatingActionButton fab;
     private MarkdownView mMarkdownView;
+    private TranslateCallback translateCallback;
+    private String trantext;
 
 
     @Override
@@ -285,13 +295,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
-        //判断工具栏 有没有打开 恢复他的状态
-        if (get_sharedString("tipscard", "不显示").equals("显示")) {
-            tipscard.setVisibility(View.VISIBLE);
-        } else {
-            tipscard.setVisibility(View.GONE);
-        }
 
 
         filepath = get_filepath();
@@ -415,6 +418,11 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+
+    ImageButton seemore;
+
+
+
     /**
      * 初始化界面
      */
@@ -431,6 +439,7 @@ public class MainActivity extends AppCompatActivity
 
         cons = findViewById(R.id.cons);
         tipscard = view1.findViewById(R.id.tipscard);
+        textvao = view1.findViewById(R.id.textvao);
         view_edit = view1.findViewById(R.id.editText);
         scr_edit = view1.findViewById(R.id.scr_edit);
         scr_res = view2.findViewById(R.id.scr_res);
@@ -442,6 +451,8 @@ public class MainActivity extends AppCompatActivity
         viewList.add(view1);
         viewList.add(view2);
         mPerformEdit = new PerformEdit(view_edit);
+
+        seemore = view1.findViewById(R.id.seemore);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             //下面三个回调缺一不可，否则就会编译报错
@@ -517,7 +528,11 @@ public class MainActivity extends AppCompatActivity
             }
         };
         viewPager.setAdapter(pagerAdapter);
+
+
+
     }
+
     //设置返回按钮：不应该退出程序---而是返回桌面
     //复写onKeyDown事件
     @Override
@@ -715,10 +730,10 @@ public class MainActivity extends AppCompatActivity
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (viewPager.getCurrentItem() == 1){
-                    Snackbar.make(cons,"已经在预览模式了",Snackbar.LENGTH_SHORT).show();
+                if (viewPager.getCurrentItem() == 1) {
+                    Snackbar.make(cons, "已经在预览模式了", Snackbar.LENGTH_SHORT).show();
 
-                }else {
+                } else {
                     viewPager.setCurrentItem(1);
                 }
                 break;
@@ -737,14 +752,6 @@ public class MainActivity extends AppCompatActivity
             case R.id.tools:
 
 
-                if (tipscard.getVisibility() == View.GONE) {
-                    tipscard.setVisibility(View.VISIBLE);
-                    set_sharedString("tipscard", "显示");
-                    IntroView(tipscard, "2", "这里是工具栏，可以查看统计和使用快捷按钮");
-                } else {
-                    tipscard.setVisibility(View.GONE);
-                    set_sharedString("tipscard", "不显示");
-                }
 
                 viewPager.setCurrentItem(0);
                 break;
@@ -1401,7 +1408,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onError(Call call, Exception e, int i) {
                         md.dismiss();
-                        Snackbar.make(cons, "上传失败"+e.getMessage(), Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(cons, "上传失败" + e.getMessage(), Snackbar.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -1414,11 +1421,11 @@ public class MainActivity extends AppCompatActivity
                             JSONObject datajson = requestjson.getJSONObject("data");
                             String link = datajson.getString("url");
                             checkKeyWord();
-                            insert_text("![" + picfile.getName() + "](" + link.replace("\\","") + ")");
+                            insert_text("![" + picfile.getName() + "](" + link.replace("\\", "") + ")");
 
                         } catch (Exception e) {
                             md.dismiss();
-                            Snackbar.make(cons, "上传失败:"+e.getMessage(), Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(cons, "上传失败:" + e.getMessage(), Snackbar.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -1426,5 +1433,203 @@ public class MainActivity extends AppCompatActivity
 
     public void share_downlink(View view) {
         new DabaiUtils().sendText(context, "推荐应用 【MarkdownQ】： https://www.coolapk.com/apk/com.dabai.markdownq  分享自【MarkdownQ】 ");
+    }
+
+    public void gohome(View view) {
+        view_edit.setSelection(0);
+    }
+
+    public void goend(View view) {
+        view_edit.setSelection(view_edit.getText().length());
+    }
+
+    //检查是否选中
+    public boolean is_sele() {
+        if (getStart() == getEnd()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public int getStart() {
+        return view_edit.getSelectionStart();
+    }
+
+    public int getEnd() {
+        return view_edit.getSelectionEnd();
+    }
+
+    public String getSeleText() {
+
+        String seletext = view_edit.getText().toString().substring(getStart(), getEnd());
+
+        return seletext;
+    }
+
+
+    public void seach(View view) {
+
+        Toast.makeText(context, "还不能用呢", Toast.LENGTH_SHORT).show();
+
+        String alltext = view_edit.getText().toString();
+
+        if (is_sele()) {
+            seachx(is_sele(), alltext.substring(getStart(), getEnd()));
+        } else {
+            seachx(is_sele(), view_edit.getText().toString());
+        }
+
+
+    }
+
+    //搜索替换
+    public void seachx(boolean issele, String text) {
+
+        if (issele) {
+            //被选中的对话框
+
+
+        } else {
+
+
+        }
+
+    }
+
+
+    public void voice(View v){
+        Toast.makeText(context, "还不能用呢", Toast.LENGTH_SHORT).show();
+
+    }
+
+
+
+
+    public void copy(View view) {
+        ClipboardManager clip = (ClipboardManager) getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        clip.setText(getSeleText());
+        view_edit.setSelection(getEnd());
+        Toast.makeText(context, "复制成功", Toast.LENGTH_SHORT).show();
+
+
+    }
+
+
+    public void cut(View view) {
+        ClipboardManager clip = (ClipboardManager) getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        clip.setText(getSeleText());
+
+        int allnum = getSeleText().length();
+        view_edit.setSelection(getEnd());
+
+        for (int i = 0; i < allnum; i++) {
+            delqina();
+        }
+
+        Toast.makeText(context, "剪切成功", Toast.LENGTH_SHORT).show();
+
+    }
+
+
+    public void delqina() {
+        int index = view_edit.getSelectionStart();
+        Editable editable = view_edit.getText();
+        editable.delete(index - 1, index);
+    }
+
+    public void paste(View view) {
+
+        int allnum = getSeleText().length();
+        view_edit.setSelection(getEnd());
+
+        for (int i = 0; i < allnum; i++) {
+            delqina();
+        }
+        ClipboardManager clip = (ClipboardManager) getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        String text = clip.getText().toString();
+        insert_text(text);
+
+    }
+
+    public void allsele(View view) {
+        view_edit.selectAll();
+    }
+
+    public void translate(View view) {
+        if (is_sele()) {
+            trantext = getSeleText();
+
+            translateCallback = new TranslateCallback() {
+                @Override
+                public void onTranslateDone(final String result) {
+
+                    new MaterialDialog.Builder(MainActivity.this)
+                            .title("翻译结果")
+                            .content(result)
+                            .positiveText("翻译为中文")
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    new TranslateUtil().translate(MainActivity.this, "auto", "zh-CN", trantext, translateCallback);
+
+                                }
+                            })
+                            .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    new TranslateUtil().translate(MainActivity.this, "auto", "en", trantext, translateCallback);
+
+                                }
+                            })
+                            .negativeText("翻译为英文")
+
+                            .neutralText("复制")
+                            .onNeutral(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    ClipboardManager clip = (ClipboardManager) getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                                    clip.setText(result);
+
+                                    Toast.makeText(context, "复制成功", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .show();
+                }
+            };
+
+            new TranslateUtil().translate(this, "auto", "en", trantext, translateCallback);
+        } else {
+            Snackbar.make(cons, "请先选中需要翻译的文本", Snackbar.LENGTH_SHORT).show();
+            try {
+                hideInput();
+            } catch (Exception e) {
+            }
+        }
+
+    }
+
+    public void seemoreon(View view) {
+
+
+        if (tipscard.getVisibility() == View.GONE) {
+
+            tipscard.setVisibility(View.VISIBLE);
+            ObjectAnimator.ofFloat(tipscard, "translationY", -500, 0).setDuration(200).start();
+
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                seemore.setImageDrawable(getDrawable(R.drawable.nomore1));
+            }
+            IntroView(tipscard, "2", "这里是工具栏，可以查看统计和使用快捷按钮");
+        } else {
+
+            tipscard.setVisibility(View.GONE);
+
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                seemore.setImageDrawable(getDrawable(R.drawable.seemore1));
+            }
+        }
     }
 }

@@ -1,71 +1,308 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/tipscard"
+    android:visibility="gone"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardCornerRadius="3dp"
-    app:cardElevation="5dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    app:cardElevation="5dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:padding="5dp">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/texttools"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="字数：0" />
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:padding="10dp"
+                        android:text="未开始统计数据" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="ins_title"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/atitle1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="ins_ul"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/alist1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="ins_ui"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/alist2"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="ins_link"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/alink1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="ins_pic"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/apic1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="ins_codes"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/acode1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="ins_bold"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/abold1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="ins_quote"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/aquote1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="ins_fengeline"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/aline1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="ins_zhong"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/azhong1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="ins_delline"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/adelline1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="ins_date"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/atime"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="gohome"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/hometop1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="goend"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/endbott1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="seach"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/sea1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="voice"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/voice1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/textvao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="cut"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/cut1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="copy"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/copy1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="paste"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/paste1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="allsele"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/allsele1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:onClick="translate"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/translate1"
+                        tools:ignore="NewApi,VectorDrawableCompat" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/atime"
-                tools:ignore="VectorDrawableCompat"
-                android:background="#ffffffff"
-                android:layout_weight="1"
-                android:onClick="ins_date"
-                />
-
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/alist1"
-                tools:ignore="VectorDrawableCompat"
-                android:background="#ffffffff"
-                android:layout_weight="1"/>
-
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/alist2"
-                tools:ignore="VectorDrawableCompat"
-                android:background="#ffffffff"
-                android:layout_weight="1"/>
-
-
-
-
-        </LinearLayout>
-    </LinearLayout>
 </androidx.cardview.widget.CardView>
+
+
+

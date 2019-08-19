@@ -47,6 +47,12 @@
             android:summary="用到的开源项目以及软件相关"/>
 
         <PreferenceScreen
+            android:key="alipay"
+            android:icon="@drawable/money1"
+            android:title="捐赠"
+            />
+
+        <PreferenceScreen
             android:key="about"
             android:icon="@drawable/dev2"
             android:title="关于软件"

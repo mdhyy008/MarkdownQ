@@ -174,6 +174,21 @@ public class SettingsActivity extends AppCompatActivity {
                     change_workdir();
 
                     break;
+                case "alipay":
+                    try {
+                        Intent intent = new Intent();
+                        //Intent intent = new Intent(Intent.ACTION_VIEW,uri);
+                        intent.setAction("android.intent.action.VIEW");
+                        //支付宝二维码解析
+                        Uri content_url = Uri.parse("alipayqr://platformapi/startapp?saId=10000007&qrcode=HTTPS://QR.ALIPAY.COM/FKX08574RJXQHHF1SRRFIB2");
+                        intent.setData(content_url);
+                        startActivity(intent);
+                        Toast.makeText(getContext(), "嘿嘿😀", Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        Toast.makeText(getContext(), "调起支付宝失败！", Toast.LENGTH_SHORT).show();
+                    }
+
+                    break;
             }
 
 
