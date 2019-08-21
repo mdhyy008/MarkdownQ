@@ -30,19 +30,12 @@ import androidx.preference.SwitchPreference;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.dabai.markdownq.MainActivity;
 import com.dabai.markdownq.R;
 import com.dabai.markdownq.utils.DabaiUtils;
 import com.dabai.markdownq.utils.HtmlUtils;
-import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.util.ArrayList;
-
-import co.mobiwise.materialintro.shape.Focus;
-import co.mobiwise.materialintro.shape.FocusGravity;
-import co.mobiwise.materialintro.view.MaterialIntroView;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -162,7 +155,7 @@ public class SettingsActivity extends AppCompatActivity {
 
                     break;
                 case "about":
-                    startActivity(new Intent(getContext(), AboutActivity.class));
+                    startActivity(new Intent(getContext(),AboutActivity.class));
                     break;
                 case "github":
                     startActivity(new Intent(getContext(), GithubActivity.class));

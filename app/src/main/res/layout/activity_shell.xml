@@ -16,14 +16,30 @@
             android:layout_height="200dp"
             android:layout_margin="10dp">
 
-            <GridView
-                android:id="@+id/lv"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fadingEdge="none"
-                android:fastScrollEnabled="true"
-                android:numColumns="2"
-                android:scrollbars="none" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_margin="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Scripts" />
+
+                <GridView
+                    android:id="@+id/lv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fadingEdge="none"
+                    android:fastScrollEnabled="true"
+                    android:numColumns="2"
+                    android:scrollbars="none">
+
+                </GridView>
+            </LinearLayout>
+
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
@@ -37,6 +53,13 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="Edit box" />
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"

@@ -76,7 +76,7 @@ class UpLogActivity : AppCompatActivity() {
     }
 
 
-    
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle presses on the action bar items

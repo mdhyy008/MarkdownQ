@@ -27,7 +27,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activity.ShellActivity"
-            android:label="Shell脚本"></activity>
+            android:label="Shell脚本"
+            android:windowSoftInputMode="stateHidden"></activity>
         <activity
             android:name=".activity.UpLogActivity"
             android:label="更新日志" />

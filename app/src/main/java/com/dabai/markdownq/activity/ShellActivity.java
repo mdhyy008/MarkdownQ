@@ -24,8 +24,10 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dabai.markdownq.R;
+import com.dabai.markdownq.utils.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ShellActivity extends AppCompatActivity {
@@ -33,6 +35,7 @@ public class ShellActivity extends AppCompatActivity {
     private Context context;
     private GridView lv;
     EditText ed;
+    private File dir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +60,7 @@ public class ShellActivity extends AppCompatActivity {
 
     private void init() {
 
-        File dir = new File(context.getFilesDir(), "shells");
+        dir = new File(context.getFilesDir(), "shells");
         if (!dir.exists()) {
             dir.mkdir();
         }
@@ -164,16 +167,32 @@ public class ShellActivity extends AppCompatActivity {
                 .input("", null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog dialog, CharSequence input) {
-/**
- * 该写 保存功能了
- */
 
 
+                        File file = new File(dir, input + ".sh");
+                        if (file.exists()) {
+                            Toast.makeText(context, "保存失败，文件名冲突", Toast.LENGTH_SHORT).show();
+                        } else {
+                            try {
+                                new FileUtils().writeText(file.getAbsolutePath(), ed.getText().toString(), true);
+                                Toast.makeText(context, "保存成功", Toast.LENGTH_SHORT).show();
+                                init();
+                                ed.setText("");
+                            } catch (IOException e) {
+                                Toast.makeText(context, "异常：" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
 
-
+                        }
+                        
                     }
                 })
                 .positiveText("保存")
                 .show();
+    }
+
+    @Override
+    protected void onResume() {
+        init();
+        super.onResume();
     }
 }
