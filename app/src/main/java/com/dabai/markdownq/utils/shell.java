@@ -1,6 +1,5 @@
 package com.dabai.markdownq.utils;
 
-
 import java.io.*;
 
 public class shell
@@ -17,7 +16,7 @@ public class shell
     }
 
 
-    public static String su(String a){
+    public String su(String a){
 
         Runtime mRuntime = Runtime.getRuntime();
         try {
@@ -39,7 +38,7 @@ public class shell
 
 
 
-    public static CommandResult execCommand(String[] commands, boolean isRoot) {
+    public CommandResult execCommand(String[] commands, boolean isRoot) {
         CommandResult commandResult = new CommandResult();
         if (commands == null || commands.length == 0) return commandResult;
         DataOutputStream os = null;
@@ -48,7 +47,7 @@ public class shell
         StringBuilder successMsg = null;
         StringBuilder errorMsg = null;
         try {
-            Process process = Runtime.getRuntime().exec(isRoot ? COMMAND_SU : COMMAND_SH);
+            java.lang.Process process = Runtime.getRuntime().exec(isRoot ? COMMAND_SU : COMMAND_SH);
             os = new DataOutputStream(process.getOutputStream());
             for (String command : commands)
             {

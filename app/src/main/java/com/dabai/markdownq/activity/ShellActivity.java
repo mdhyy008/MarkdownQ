@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,10 +13,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -23,11 +26,15 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.dabai.markdownq.MainActivity;
 import com.dabai.markdownq.R;
 import com.dabai.markdownq.utils.FileUtils;
+import com.dabai.markdownq.utils.shell;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class ShellActivity extends AppCompatActivity {
@@ -36,6 +43,8 @@ public class ShellActivity extends AppCompatActivity {
     private GridView lv;
     EditText ed;
     private File dir;
+    private String[] data;
+    private AlertDialog dialog_sh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +58,47 @@ public class ShellActivity extends AppCompatActivity {
 
         initTheme();
 
+
+
+        dialog_sh = new AlertDialog.Builder(this)
+                .setTitle("脚本执行器")
+                .setMessage("")
+                .setPositiveButton("关闭弹窗",null)
+                .create();
+
+
+
         lv = findViewById(R.id.lv);
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            private String filename;
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                 filename = data[i];
+
+                new MaterialDialog.Builder(ShellActivity.this)
+                        .title("提示")
+                        .content("确定执行 "+filename +" 嘛？")
+                        .positiveText("确认")
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                
+                                File file = new File(dir,filename);
+                                do_exec("sh "+file.getAbsolutePath());
+
+                            }
+                        })
+                        .negativeText("取消")
+                        .show();
+
+            }
+        });
+
+
+
+
 
         ed = findViewById(R.id.ed);
 
@@ -66,7 +115,7 @@ public class ShellActivity extends AppCompatActivity {
         }
 
 
-        String[] data = dir.list();
+         data = dir.list();
 
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, data);
         lv.setAdapter(adapter);
@@ -195,4 +244,29 @@ public class ShellActivity extends AppCompatActivity {
         init();
         super.onResume();
     }
+
+
+    String do_exec(String cmd) {
+
+        dialog_sh.setMessage("");
+        dialog_sh.show();
+        String s = "\n";
+        try {
+            Process p = Runtime.getRuntime().exec(cmd);
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(p.getInputStream()));
+            String line = "";
+            while ((line = in.readLine()) != null) {
+                Log.d("dabai", "do_exec: "+line);
+
+                s += line + "\n";
+                dialog_sh.setMessage(s);
+            }
+        } catch (IOException e) {
+            dialog_sh.setMessage(""+e);
+            Log.d("dabai", "do_exec: "+e);
+        }
+        return cmd;
+    }
+
 }
