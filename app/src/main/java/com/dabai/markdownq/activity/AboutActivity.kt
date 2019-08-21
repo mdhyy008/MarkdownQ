@@ -78,6 +78,8 @@ class AboutActivity : AppCompatActivity() {
     }
 
 
+
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle presses on the action bar items
         when (item.itemId) {

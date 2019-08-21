@@ -11,32 +11,28 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.Window
 import android.view.WindowManager
-import android.widget.TextView
 
 import com.dabai.markdownq.R
-import com.zzhoujay.markdown.MarkDown
 
 import br.tiagohm.markdownview.MarkdownView
 import br.tiagohm.markdownview.css.styles.Github
 
-class GithubActivity : AppCompatActivity() {
+class UpLogActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_github)
+        setContentView(R.layout.activity_up_log)
+
 
         val actionBar = supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(true)
         initTheme()
 
-        val mv = findViewById<MarkdownView>(R.id.gitmarkdown)
+        val mv = findViewById<MarkdownView>(R.id.uplogmarkdown)
         mv.addStyleSheet(Github())
-        mv.loadMarkdownFromAsset("开源相关.md")
-
+        mv.loadMarkdownFromAsset("更新日志.md")
 
     }
-
-
 
 
     /**
@@ -79,6 +75,8 @@ class GithubActivity : AppCompatActivity() {
 
     }
 
+
+    
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle presses on the action bar items
