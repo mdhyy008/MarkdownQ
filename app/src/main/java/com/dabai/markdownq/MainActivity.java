@@ -3,6 +3,7 @@ package com.dabai.markdownq;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -20,6 +21,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputType;
@@ -75,11 +79,23 @@ import com.dabai.markdownq.utils.FileUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.iflytek.cloud.ErrorCode;
+import com.iflytek.cloud.InitListener;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechError;
+import com.iflytek.cloud.SpeechRecognizer;
+import com.iflytek.cloud.SpeechUtility;
+import com.iflytek.cloud.ui.RecognizerDialog;
+import com.iflytek.cloud.ui.RecognizerDialogListener;
+import com.iflytek.speech.RecognizerListener;
+import com.iflytek.speech.RecognizerResult;
 import com.wildma.pictureselector.PictureSelector;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -93,6 +109,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import br.tiagohm.markdownview.MarkdownView;
@@ -296,7 +313,6 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-
         filepath = get_filepath();
 
         if (filepath.isEmpty()) {
@@ -422,7 +438,6 @@ public class MainActivity extends AppCompatActivity
     ImageButton seemore;
 
 
-
     /**
      * 初始化界面
      */
@@ -528,7 +543,6 @@ public class MainActivity extends AppCompatActivity
             }
         };
         viewPager.setAdapter(pagerAdapter);
-
 
 
     }
@@ -750,7 +764,6 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.tools:
-
 
 
                 viewPager.setCurrentItem(0);
@@ -1254,6 +1267,8 @@ public class MainActivity extends AppCompatActivity
     public void ins_link(View view) {
 
         final View diaview = getLayoutInflater().inflate(R.layout.dialog_inslink, null);
+
+
         new AlertDialog.Builder(this)
                 .setTitle("插入链接")
                 .setView(diaview)
@@ -1272,6 +1287,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 })
                 .show();
+
 
     }
 
@@ -1470,36 +1486,67 @@ public class MainActivity extends AppCompatActivity
 
     public void seach(View view) {
 
-        Toast.makeText(context, "还不能用呢", Toast.LENGTH_SHORT).show();
-
         String alltext = view_edit.getText().toString();
-
-        if (is_sele()) {
-            seachx(is_sele(), alltext.substring(getStart(), getEnd()));
-        } else {
-            seachx(is_sele(), view_edit.getText().toString());
-        }
-
-
+        seachx(alltext);
     }
 
     //搜索替换
-    public void seachx(boolean issele, String text) {
+    public void seachx(final String text) {
 
-        if (issele) {
-            //被选中的对话框
-
-
-        } else {
+        View v = getLayoutInflater().inflate(R.layout.dialog_seach,null);
+        final TextInputEditText tie1 = v.findViewById(R.id.ed1);
+        final TextInputEditText tie2 = v.findViewById(R.id.ed2);
 
 
-        }
+        new MaterialDialog.Builder(this)
+                .title("查找/替换")
+                .customView(v, true)
+                .neutralText("关闭")
+                .positiveText("全部替换")
+                .cancelable(false)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        String e1 = tie1.getText().toString();
+                        String e2 = tie2.getText().toString();
+
+
+                        try {
+                            int total = 0;
+                            for (String tmp = view_edit.getText().toString(); tmp != null&&tmp.length()>=e1.length();){
+                                if(tmp.indexOf(e1) == 0){
+                                    total ++;
+                                }
+                                tmp = tmp.substring(1);
+                            }
+                            Toast.makeText(context, "替换次数为："+total, Toast.LENGTH_SHORT).show();
+                        } catch (Exception e) {
+                        }
+
+
+                        String res = view_edit.getText().toString().replace(e1, e2);
+
+                        view_edit.setText(res);
+                        view_edit.setSelection(view_edit.getText().length());
+
+                        try {
+                            hideInput();
+                        } catch (Exception e) {
+                        }
+
+                    }
+                })
+                .show();
+
+
 
     }
 
 
-    public void voice(View v){
-        Toast.makeText(context, "还不能用呢", Toast.LENGTH_SHORT).show();
+
+    public void voice(View v) {
+
+
 
     }
 

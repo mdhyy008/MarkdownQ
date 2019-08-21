@@ -227,7 +227,8 @@
                         android:onClick="voice"
                         android:padding="10dp"
                         app:srcCompat="@drawable/voice1"
-                        tools:ignore="NewApi,VectorDrawableCompat" />
+                        tools:ignore="NewApi,VectorDrawableCompat"
+                        android:visibility="gone"/>
 
                 </LinearLayout>
 

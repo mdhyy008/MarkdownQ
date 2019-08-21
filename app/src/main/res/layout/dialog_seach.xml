@@ -1,30 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="10dp">
+    android:layout_height="match_parent">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ed1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="显示的文本" />
+            android:hint="查找内容" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ed2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="链接" />
+            android:hint="替换为" />
     </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>
