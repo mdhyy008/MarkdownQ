@@ -7,8 +7,8 @@ android {
         applicationId "com.dabai.markdownq"
         minSdkVersion 18
         targetSdkVersion 29
-        versionCode 29
-        versionName "1.7"
+        versionCode 30
+        versionName "1.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         //控制dex分包状态
         multiDexEnabled true
