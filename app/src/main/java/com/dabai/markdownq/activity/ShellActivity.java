@@ -32,7 +32,7 @@ public class ShellActivity extends AppCompatActivity {
 
     private Context context;
     private GridView lv;
-EditText ed;
+    EditText ed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,14 +57,13 @@ EditText ed;
 
     private void init() {
 
-        File dir = new File(context.getFilesDir(),"shells");
-        if (!dir.exists()){
+        File dir = new File(context.getFilesDir(), "shells");
+        if (!dir.exists()) {
             dir.mkdir();
         }
 
 
-
-        String[] data =dir.list();
+        String[] data = dir.list();
 
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, data);
         lv.setAdapter(adapter);
@@ -143,14 +142,14 @@ EditText ed;
     }
 
     public void copyedit(View view) {
-        ClipboardManager clipboardManager = (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         clipboardManager.setText(ed.getText().toString());
         Toast.makeText(context, "复制成功", Toast.LENGTH_SHORT).show();
 
     }
 
     public void pasteedit(View view) {
-        ClipboardManager clipboardManager = (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ed.setText(clipboardManager.getText().toString());
         Toast.makeText(context, "粘贴成功", Toast.LENGTH_SHORT).show();
         ed.setSelection(ed.length());
@@ -165,6 +164,11 @@ EditText ed;
                 .input("", null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog dialog, CharSequence input) {
+/**
+ * 该写 保存功能了
+ */
+
+
 
 
                     }
