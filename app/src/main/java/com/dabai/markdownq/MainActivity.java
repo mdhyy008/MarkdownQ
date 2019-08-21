@@ -72,6 +72,7 @@ import com.bumptech.glide.load.resource.bitmap.BitmapEncoder;
 import com.dabai.markdownq.activity.FeedActivity;
 import com.dabai.markdownq.activity.HelpActivity;
 import com.dabai.markdownq.activity.SettingsActivity;
+import com.dabai.markdownq.activity.ShellActivity;
 import com.dabai.markdownq.translate.TranslateCallback;
 import com.dabai.markdownq.translate.TranslateUtil;
 import com.dabai.markdownq.utils.DabaiUtils;
@@ -1001,7 +1002,8 @@ public class MainActivity extends AppCompatActivity
                 }).show();
             }
 
-        } else if (id == R.id.onofftools) {
+        } else if (id == R.id.shells) {
+            startActivity(new Intent(MainActivity.this, ShellActivity.class));
 
 
         } else if (id == R.id.sharetext) {
@@ -1549,9 +1551,6 @@ public class MainActivity extends AppCompatActivity
 
 
     }
-
-
-
 
     public void copy(View view) {
         ClipboardManager clip = (ClipboardManager) getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
