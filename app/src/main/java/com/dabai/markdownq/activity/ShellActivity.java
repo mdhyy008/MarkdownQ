@@ -44,7 +44,9 @@ public class ShellActivity extends AppCompatActivity {
     EditText ed;
     private File dir;
     private String[] data;
-    private AlertDialog dialog_sh;
+    private String edittext;
+    private MaterialDialog prod;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,15 +61,6 @@ public class ShellActivity extends AppCompatActivity {
         initTheme();
 
 
-
-        dialog_sh = new AlertDialog.Builder(this)
-                .setTitle("脚本执行器")
-                .setMessage("")
-                .setPositiveButton("关闭弹窗",null)
-                .create();
-
-
-
         lv = findViewById(R.id.lv);
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -75,18 +68,56 @@ public class ShellActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                 filename = data[i];
+                filename = data[i];
 
                 new MaterialDialog.Builder(ShellActivity.this)
                         .title("提示")
-                        .content("确定执行 "+filename +" 嘛？")
+                        .content("确定执行 " + filename + " 嘛？")
                         .positiveText("确认")
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            private String[] shells;
+
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                
-                                File file = new File(dir,filename);
-                                do_exec("sh "+file.getAbsolutePath());
+
+                                File file = new File(dir, filename);
+
+                                try {
+                                    edittext = FileUtils.read_file(file.getAbsolutePath());
+                                } catch (Exception e) {
+                                }
+
+                                shells = edittext.split("\n");
+
+
+                                prod = new MaterialDialog.Builder(ShellActivity.this)
+                                        .title("提示")
+                                        .content("正在执行脚本...")
+                                        .progress(true, 0)
+                                        .progressIndeterminateStyle(true)
+                                        .show();
+
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        new shell().execCommand(shells, true);
+
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                prod.dismiss();
+                                                new MaterialDialog.Builder(ShellActivity.this)
+                                                        .title("提示")
+                                                        .content("执行完毕")
+                                                        .positiveText("确认")
+                                                        .show();
+                                            }
+                                        });
+
+                                    }
+                                }).start();
+
 
                             }
                         })
@@ -95,9 +126,6 @@ public class ShellActivity extends AppCompatActivity {
 
             }
         });
-
-
-
 
 
         ed = findViewById(R.id.ed);
@@ -115,7 +143,7 @@ public class ShellActivity extends AppCompatActivity {
         }
 
 
-         data = dir.list();
+        data = dir.list();
 
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, data);
         lv.setAdapter(adapter);
@@ -245,28 +273,5 @@ public class ShellActivity extends AppCompatActivity {
         super.onResume();
     }
 
-
-    String do_exec(String cmd) {
-
-        dialog_sh.setMessage("");
-        dialog_sh.show();
-        String s = "\n";
-        try {
-            Process p = Runtime.getRuntime().exec(cmd);
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(p.getInputStream()));
-            String line = "";
-            while ((line = in.readLine()) != null) {
-                Log.d("dabai", "do_exec: "+line);
-
-                s += line + "\n";
-                dialog_sh.setMessage(s);
-            }
-        } catch (IOException e) {
-            dialog_sh.setMessage(""+e);
-            Log.d("dabai", "do_exec: "+e);
-        }
-        return cmd;
-    }
 
 }

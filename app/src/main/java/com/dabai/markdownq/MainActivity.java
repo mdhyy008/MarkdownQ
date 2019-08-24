@@ -204,26 +204,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                save_file();
-            }
-        });
-        fab.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                try {
-                    hideInput();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                save_file();
-                viewPager.setCurrentItem(1);
-                return true;
-            }
-        });
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -249,7 +230,26 @@ public class MainActivity extends AppCompatActivity
         init_val();
         init();
 
-
+        fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                save_file();
+            }
+        });
+        fab.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                try {
+                    hideInput();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                save_file();
+                viewPager.setCurrentItem(1);
+                return true;
+            }
+        });
         /**
          * 引导动画
          */
@@ -309,7 +309,7 @@ public class MainActivity extends AppCompatActivity
             public void afterTextChanged(Editable editable) {
                 is_save = false;
                 f5();
-                fab.setVisibility(View.VISIBLE);
+
             }
         });
 
@@ -410,7 +410,7 @@ public class MainActivity extends AppCompatActivity
                                 setTitle(new File(filepath).getName());
                                 change_filepath(filepath);
                                 is_save = true;
-                                fab.setVisibility(View.GONE);
+
                             } catch (IOException e) {
                                 Snackbar.make(cons, "保存失败！", Snackbar.LENGTH_SHORT).show();
                             }
@@ -425,7 +425,7 @@ public class MainActivity extends AppCompatActivity
                 Snackbar.make(cons, "保存成功！", Snackbar.LENGTH_SHORT).show();
                 change_filepath(filepath);
                 is_save = true;
-                fab.setVisibility(View.GONE);
+
             } catch (IOException e) {
                 Snackbar.make(cons, "保存失败！", Snackbar.LENGTH_SHORT).show();
                 change_filepath(filepath);
@@ -480,7 +480,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onPageSelected(int position) {
                 if (position == 1) {
-                    fab.setVisibility(View.GONE);
+
                 }
             }
 

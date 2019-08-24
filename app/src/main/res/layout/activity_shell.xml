@@ -127,6 +127,7 @@
                         android:background="@null"
                         android:gravity="top"
                         android:hint="在这里编写脚本"
+                        android:minHeight="200dp"
                         android:padding="14dp" />
                 </ScrollView>
             </LinearLayout>
