@@ -1002,11 +1002,7 @@ public class MainActivity extends AppCompatActivity
                 }).show();
             }
 
-        } else if (id == R.id.shells) {
-            startActivity(new Intent(MainActivity.this, ShellActivity.class));
-
-
-        } else if (id == R.id.sharetext) {
+        }  else if (id == R.id.sharetext) {
 
             new MaterialDialog.Builder(this)
                     .title("选择分享方式")
@@ -1043,7 +1039,7 @@ public class MainActivity extends AppCompatActivity
                     .show();
 
         } else if (id == R.id.nav_send) {
-            startActivity(new Intent(this, FeedActivity.class));
+            new DabaiUtils().openLink(this,"https://support.qq.com/product/134929");
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -1409,7 +1405,7 @@ public class MainActivity extends AppCompatActivity
         showProgress("正在上传图片", "正在把图片上传到图床，请稍等");
         final File picfile = new File(picturePath);
 
-        String url = "https://sm.ms/api/upload";
+        String url = "https://sm.ms/api/v2/upload/";
         String ua = "Mozilla/5.0 (Linux; Android ; M5 Build/MRA58K) MarkdownQ/1.0";
 
         HashMap<String, String> header = new HashMap<String, String>();

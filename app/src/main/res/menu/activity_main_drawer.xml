@@ -33,17 +33,6 @@
         </menu>
     </item>
 
-
-
-    <item android:title="高级功能">
-        <menu>
-            <item
-                android:id="@+id/shells"
-                android:icon="@drawable/shell1"
-                android:title="SHELL脚本" />
-        </menu>
-    </item>
-
     <item android:title="程序相关">
         <menu>
             <item

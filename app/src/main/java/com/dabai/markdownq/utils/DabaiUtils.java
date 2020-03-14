@@ -77,21 +77,22 @@ public class DabaiUtils {
      */
     public void openLink(Context context, String link) {
 
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(link));
-            context.startActivity(intent);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setData(Uri.parse(link));
+        context.startActivity(intent);
 
     }
 
 
     /**
      * 将bitmap中的某种颜色值替换成新的颜色
+     *
      * @param oldColor
      * @param newColor
      * @return Bitmap
      */
-    public static Bitmap replaceBitmapColor(Bitmap oldBitmap, int oldColor, int newColor)
-    {
+    public static Bitmap replaceBitmapColor(Bitmap oldBitmap, int oldColor, int newColor) {
         //相关说明可参考 http://xys289187120.blog.51cto.com/3361352/657590/
         Bitmap mBitmap = oldBitmap.copy(Bitmap.Config.ARGB_8888, true);
         //循环获得bitmap所有像素点
@@ -121,6 +122,7 @@ public class DabaiUtils {
 
     /**
      * 获取随机颜色值
+     *
      * @return
      */
     public static String getRandColorCode() {
@@ -134,7 +136,7 @@ public class DabaiUtils {
         g = g.length() == 1 ? "0" + g : g;
         b = b.length() == 1 ? "0" + b : b;
 
-        return "#"+r + g + b;
+        return "#" + r + g + b;
     }
 
     //检查字符串包含中文
@@ -150,7 +152,7 @@ public class DabaiUtils {
 
 
     //发送文本
-    public void sendText(Context context,String p0) {
+    public void sendText(Context context, String p0) {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, "This is text to send.");
@@ -164,7 +166,6 @@ public class DabaiUtils {
     /**
      * 解压缩功能.
      * 将zipFile文件解压到folderPath目录下.
-     *
      */
     public int unzip_DirFile(File zipFile, String folderPath) throws ZipException, IOException {
         //public static void upZipFile() throws Exception{
@@ -534,7 +535,7 @@ public class DabaiUtils {
     public void shareFile(Context c, String path) {
         Intent imageIntent = new Intent(Intent.ACTION_SEND);
         imageIntent.setType("*/*");
-        imageIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+path));
+        imageIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + path));
         c.startActivity(Intent.createChooser(imageIntent, "分享"));
     }
 

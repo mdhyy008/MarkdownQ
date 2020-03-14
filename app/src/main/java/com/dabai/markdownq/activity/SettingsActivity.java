@@ -151,17 +151,9 @@ public class SettingsActivity extends AppCompatActivity {
                         public void onStopTrackingTouch(SeekBar seekBar) {
                         }
                     });
-
-
-                    break;
-                case "about":
-                    startActivity(new Intent(getContext(),AboutActivity.class));
                     break;
                 case "github":
                     startActivity(new Intent(getContext(), GithubActivity.class));
-                    break;
-                case "uplog":
-                    startActivity(new Intent(getContext(), UpLogActivity.class));
                     break;
                 case "workdir":
                     change_workdir();

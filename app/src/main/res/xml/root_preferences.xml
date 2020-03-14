@@ -30,12 +30,6 @@
 
 
         <PreferenceScreen
-            android:icon="@drawable/uplog1"
-            android:key="uplog"
-            android:title="更新日志" />
-
-
-        <PreferenceScreen
             android:icon="@drawable/ver1"
             android:key="ver"
             android:title="版本号" />
@@ -51,12 +45,6 @@
             android:icon="@drawable/money1"
             android:title="捐赠"
             />
-
-        <PreferenceScreen
-            android:key="about"
-            android:icon="@drawable/dev2"
-            android:title="关于软件"
-   />
 
     </PreferenceCategory>
 
